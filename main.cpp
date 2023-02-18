@@ -1,11 +1,11 @@
 #include "widget.h"
 
 #include <QApplication>
+int richelieu(QString &text, const QString key);
 
-int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
-    Widget w;
-    w.show();
-    return a.exec();
+int main(int argc, char *argv[]) {
+  QApplication a(argc, argv);
+  Widget w;
+  w.show();
+  return a.exec();
 }

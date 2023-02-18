@@ -4,7 +4,7 @@
 
 QString atbash(QString text);
 QString caesar(QString text, int step, const int is_decrypt);
-int richelieu(QString& text, const QString key);
+int richelieu(QString& text, const QString key, const int is_decrypt);
 
 Widget::Widget(QWidget *parent) : QWidget(parent) {
   this->setWindowTitle("Encryption");
@@ -55,12 +55,18 @@ Widget::Widget(QWidget *parent) : QWidget(parent) {
   tedit_key = new QTextEdit();
   tedit_key->setMaximumHeight(27);
   tedit_key->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  label_richelieu_operation = new QLabel("Operation");
+  cbox_richelieu_operation = new QComboBox();
+  cbox_richelieu_operation->addItem("Encrypt");
+  cbox_richelieu_operation->addItem("Decrypt");
   glayout_richelieu->addWidget(label_richelieu_in, 0, 0);
   glayout_richelieu->addWidget(tedit_richelieu_in, 0, 1);
   glayout_richelieu->addWidget(label_richelieu_out, 1, 0);
   glayout_richelieu->addWidget(tedit_richelieu_out, 1, 1);
   glayout_richelieu->addWidget(label_key, 2, 0);
   glayout_richelieu->addWidget(tedit_key, 2, 1);
+  glayout_richelieu->addWidget(label_richelieu_operation, 3, 0);
+  glayout_richelieu->addWidget(cbox_richelieu_operation, 3, 1);
 
   tab_widget = new QTabWidget();
   tab_widget->addTab(widget_atbash, "Atbash");
@@ -81,6 +87,8 @@ Widget::Widget(QWidget *parent) : QWidget(parent) {
           &Widget::on_text_edit_richelieu_in_text_changed);
   connect(tedit_key, &QTextEdit::textChanged, this,
           &Widget::on_text_edit_richelieu_in_text_changed);
+  connect(cbox_richelieu_operation, &QComboBox::currentIndexChanged, this,
+          &Widget::on_text_edit_richelieu_in_text_changed);
 }
 
 Widget::~Widget() {
@@ -93,6 +101,7 @@ Widget::~Widget() {
   delete label_richelieu_in;
   delete label_richelieu_out;
   delete label_key;
+  delete label_richelieu_operation;
 
   delete tedit_atbash_in;
   delete tedit_atbash_out;
@@ -109,6 +118,7 @@ Widget::~Widget() {
   
   delete spin_step;
   delete cbox_caesar_operation;
+  delete cbox_richelieu_operation;
   delete widget_caesar;
   delete widget_atbash;
   delete widget_richelieu;
@@ -130,7 +140,10 @@ void Widget::on_text_edit_caesar_in_text_changed() {
 }
 
 void Widget::on_text_edit_richelieu_in_text_changed() {
-  QString qstr = tedit_richelieu_in->toPlainText();
-  if (!richelieu(qstr, tedit_key->toPlainText()))
-    tedit_richelieu_out->setText(qstr);
+  QString text = tedit_richelieu_in->toPlainText();
+  int is_decrypt = 0;
+  if (cbox_richelieu_operation->currentIndex())
+    is_decrypt = 1;
+  if (!richelieu(text, tedit_key->toPlainText(), is_decrypt))
+    tedit_richelieu_out->setText(text);
 }

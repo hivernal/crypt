@@ -43,6 +43,8 @@ class Widget : public QWidget {
   QTextEdit* tedit_richelieu_out;
   QLabel* label_key;
   QTextEdit* tedit_key;
+  QLabel* label_richelieu_operation;
+  QComboBox* cbox_richelieu_operation;
 
 public:
   Widget(QWidget* parent = nullptr);

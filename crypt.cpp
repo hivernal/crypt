@@ -74,19 +74,29 @@ QString caesar(QString text, int step, const int is_decrypt) {
   return text;
 }
 
-int richelieu(QString& text, const QString key) {
-  if (text.size() != key.size() || key.size() == 0)
-    return 1;
-  for (size_t i = 0; i < text.size(); ++i)
-    if (key[i].unicode() < '1' || key[i].unicode() > '9')
-      return 1;
+int richelieu(QString& text, const QString key, const int is_decrypt) {
+  size_t key_size = 0;
+  size_t i = 0, j = 0;
+  for (i = 0; i < key.size(); ++i) {
+    if (key[i] >= '1' && key[i] <= '9' && key[i].unicode() - '0' <= text.size())
+      ++key_size;
+    else if (key[i] != ' ') 
+      return EXIT_FAILURE;
+  }
+  if (text.size() != key_size || key_size == 0)
+    return EXIT_FAILURE;
 
   QString result = text;
-  for (size_t i = 0, block_end = 0; i < text.size();) {
-    block_end += key[block_end].unicode() - '0';
-    for (size_t block_offset = i; i < block_end; ++i)
-      result[i] = text[key[i].unicode() - '0' - 1 + block_offset];
+  if (is_decrypt) {
+    for (i = 0, j = 0; i < text.size(); ++j)
+      for (size_t block_offset = i; i < text.size() && key[i + j] != ' '; ++i)
+        result[i] = text[key[i + j].unicode() - '0' - 1 + block_offset];
+  }
+  else {
+    for (i = 0, j = 0; i < text.size(); ++j)
+      for (size_t block_offset = i; i < text.size() && key[i + j] != ' '; ++i)
+        result[key[i + j].unicode() - '0' - 1 + block_offset] = text[i];
   }
   text = result;
-  return 0;
+  return EXIT_SUCCESS;
 }
