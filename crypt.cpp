@@ -5,22 +5,8 @@
 #define UP_RU 2111
 #define LOW_RU 2175
 
-/* const QString old_alph = "ABCDEFGHIJKLMNOPQRSTUVWXYZ\
-                          abcdefghijklmnopqrstuvwxyz\
-                          АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ\
-                          абвгдежзийклмнопрстуфхцчшщъыьэюя";
-const QString new_alph = "ZYXWVUTSRQPONMLKJIHGFEDCBA\
-                          zyxwvutsrqponmlkjihgfedcba\
-                          ЯЮЭЬЫЪЩШЧЦХФУТСРПОНМЛКЙИЗЖЕДГВБА\
-                          яюэьыъщшчцхфутсрпонмлкйизжедгвба"; */
-
 QString atbash(QString text) {
   for (size_t i = 0; i < text.size(); ++i) {
-    /* for (size_t j = 0; j < old_alph.length(); ++j)
-      if (qstr[i] == old_alph[j]) {
-        qstr[i] = new_alph[j];
-        break;
-      } */
     if (text[i] >= u'A' && text[i] <= u'Z')
       text[i] = (QChar) (UP_EN - text[i].unicode());
     else if (text[i] >= u'a' && text[i] <= u'z')
