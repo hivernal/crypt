@@ -62,78 +62,57 @@ QString caesar(QString text, int step, const int is_decrypt) {
 }
 
 int richelieu(QString& text, const QString key, const int is_decrypt) {
-  QRegularExpression blocks_re("(,?[0-9])+");
-  QRegularExpression numbers_re("[0-9]+");
-  QRegularExpressionMatchIterator blocks_iterator, numbers_iterator;
-
-  size_t i = 0, j = 0;
+  size_t i = 0, j = 0, key_size = 0;
   for (i = 0; i < key.size(); ++i) {
-    if (key[i] != ' ' && key[i] != ',' && !key[i].isDigit()) 
-      return EXIT_FAILURE;
-  }
-  size_t blocks_count = 0;
-  blocks_iterator = blocks_re.globalMatch(key);
-  while (blocks_iterator.hasNext()) {
-    blocks_iterator.next();
-    ++blocks_count;
-  }
-  int* blocks_size = new int[blocks_count];
-  int** numbers = new int* [blocks_count];
-  size_t key_size = 0;
-  blocks_iterator = blocks_re.globalMatch(key);
-  for (i = 0; blocks_iterator.hasNext(); ++i) {
-    numbers_iterator = numbers_re.globalMatch(blocks_iterator.next().captured());
-    for (j = 0; numbers_iterator.hasNext(); ++j) {
-      numbers_iterator.next();
+    if (key[i] != ' ' && key[i] != ',' && !key[i].isDigit()) {
+      text = "Incorrect key!";
+      return EXIT_SUCCESS;
     }
-    blocks_size[i] = j;
-    numbers[i] = new int[j];
-    key_size += j;
+  }
+  QStringList blocks = key.split(' ', Qt::SkipEmptyParts);
+  QStringList* numbers = new QStringList[blocks.length()];
+  for (i = 0; i < blocks.length(); ++i) {
+    numbers[i] = blocks[i].split(',', Qt::SkipEmptyParts);
+    key_size += numbers[i].length();
   }
 
-  blocks_iterator = blocks_re.globalMatch(key);
-  for (i = 0; i < blocks_count; ++i) {
-    numbers_iterator = numbers_re.globalMatch(blocks_iterator.next().captured());
-    for (j = 0; j < blocks_size[i]; ++j) {
-      numbers[i][j] = numbers_iterator.next().captured().toInt();
-      if (numbers[i][j] > blocks_size[i] || numbers[i][j] == 0) {
-        for (i = 0; i < blocks_count; ++i)
-          delete[] numbers[i];
-        delete[] numbers;
-        delete[] blocks_size;
-        return EXIT_FAILURE;
+  if (key_size != text.size() || !key_size) {
+    text = "Incorrect key!";
+    return EXIT_SUCCESS;
+  }
+  for (i = 0; i < blocks.length(); ++i) {
+    for (j = 0; j < numbers[i].length(); ++j) {
+      if (numbers[i][j].toInt() > numbers[i].length() || !numbers[i][j].toInt()) {
+        text = "Incorrect key!";
+        return EXIT_SUCCESS;
+      }
+      for (size_t k = 0; k < numbers[i].length(); ++k) {
+        if (numbers[i][j] == numbers[i][k] && k != j) {
+          text = "Incorrect key!";
+          return EXIT_SUCCESS;
+        }
       }
     }
-  }
-  if (text.size() != key_size || key_size == 0) {
-    for (i = 0; i < blocks_count; ++i)
-      delete[] numbers[i];
-    delete[] numbers;
-    delete[] blocks_size;
-    return EXIT_FAILURE;
   }
 
   QString result = text;
   size_t block_offset;
   if (is_decrypt) {
-    for (j = 0, i = 0; j < blocks_count;  ++j) {
-      for (block_offset = i; i < blocks_size[j] + block_offset; ++i) {
-        result[i] = text[numbers[j][i - block_offset] - 1 + block_offset];
+    for (i = 0, j = 0; i < blocks.length();  ++i) {
+      for (block_offset = j; j < numbers[i].length() + block_offset; ++j) {
+        result[j] = text[numbers[i][j - block_offset].toInt() - 1 + block_offset];
       }
     }
   }
   else {
-    for (i = 0, j = 0; i < blocks_count;  ++i) {
-      for (block_offset = j; j < blocks_size[i] + block_offset; ++j) {
-        result[numbers[i][j - block_offset] - 1 + block_offset] = text[j];
+    for (i = 0, j = 0; i < blocks.length();  ++i) {
+      for (block_offset = j; j < numbers[i].length() + block_offset; ++j) {
+        result[numbers[i][j - block_offset].toInt() - 1 + block_offset] = text[j];
       }
     }
   }
 
   text = result;
-  for (i = 0; i < blocks_count; ++i)
-    delete[] numbers[i];
-  delete[] numbers;
-  delete [] blocks_size;
+  delete [] numbers;
   return EXIT_SUCCESS;
 }
