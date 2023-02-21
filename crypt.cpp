@@ -77,8 +77,8 @@ int richelieu(QString& text, const QString key, const int is_decrypt) {
     blocks_iterator.next();
     ++blocks_count;
   }
-  size_t* blocks_size = new size_t[blocks_count];
-  size_t** numbers = new size_t* [blocks_count];
+  int* blocks_size = new int[blocks_count];
+  int** numbers = new int* [blocks_count];
   size_t key_size = 0;
   blocks_iterator = blocks_re.globalMatch(key);
   for (i = 0; blocks_iterator.hasNext(); ++i) {
@@ -87,14 +87,14 @@ int richelieu(QString& text, const QString key, const int is_decrypt) {
       numbers_iterator.next();
     }
     blocks_size[i] = j;
-    numbers[i] = new size_t[j];
+    numbers[i] = new int[j];
     key_size += j;
   }
 
   blocks_iterator = blocks_re.globalMatch(key);
-  for (i = 0; blocks_iterator.hasNext(); ++i) {
+  for (i = 0; i < blocks_count; ++i) {
     numbers_iterator = numbers_re.globalMatch(blocks_iterator.next().captured());
-    for (j = 0; numbers_iterator.hasNext(); ++j) {
+    for (j = 0; j < blocks_size[i]; ++j) {
       numbers[i][j] = numbers_iterator.next().captured().toInt();
       if (numbers[i][j] > blocks_size[i] || numbers[i][j] == 0) {
         for (i = 0; i < blocks_count; ++i)
