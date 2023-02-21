@@ -53,7 +53,7 @@ Widget::Widget(QWidget *parent) : QWidget(parent) {
   tedit_richelieu_out = new QTextEdit();
   label_key = new QLabel("Key");
   tedit_key = new QTextEdit();
-  tedit_key->setMaximumHeight(27);
+  tedit_key->setMaximumHeight(30);
   tedit_key->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   label_richelieu_operation = new QLabel("Operation");
   cbox_richelieu_operation = new QComboBox();
