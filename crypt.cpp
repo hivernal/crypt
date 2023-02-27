@@ -86,8 +86,8 @@ int richelieu(QString& text, const QString key, const int is_decrypt) {
         text = "Incorrect key!";
         return EXIT_SUCCESS;
       }
-      for (size_t k = 0; k < numbers[i].length(); ++k) {
-        if (numbers[i][j] == numbers[i][k] && k != j) {
+      for (size_t k = j + 1; k < numbers[i].length(); ++k) {
+        if (numbers[i][j] == numbers[i][k]) {
           text = "Incorrect key!";
           return EXIT_SUCCESS;
         }
