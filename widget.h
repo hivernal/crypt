@@ -41,10 +41,32 @@ class Widget : public QWidget {
   QTextEdit* tedit_richelieu_in;
   QLabel* label_richelieu_out;
   QTextEdit* tedit_richelieu_out;
-  QLabel* label_key;
-  QTextEdit* tedit_key;
+  QLabel* label_richelieu_key;
+  QTextEdit* tedit_richelieu_key;
   QLabel* label_richelieu_operation;
   QComboBox* cbox_richelieu_operation;
+
+  QWidget* widget_gronsfeld;
+  QGridLayout* glayout_gronsfeld;
+  QLabel* label_gronsfeld_in;
+  QTextEdit* tedit_gronsfeld_in;
+  QLabel* label_gronsfeld_out;
+  QTextEdit* tedit_gronsfeld_out;
+  QLabel* label_gronsfeld_key;
+  QTextEdit* tedit_gronsfeld_key;
+  QLabel* label_gronsfeld_operation;
+  QComboBox* cbox_gronsfeld_operation;
+
+  QWidget* widget_visionary;
+  QGridLayout* glayout_visionary;
+  QLabel* label_visionary_in;
+  QTextEdit* tedit_visionary_in;
+  QLabel* label_visionary_out;
+  QTextEdit* tedit_visionary_out;
+  QLabel* label_visionary_key;
+  QTextEdit* tedit_visionary_key;
+  QLabel* label_visionary_operation;
+  QComboBox* cbox_visionary_operation;
 
 public:
   Widget(QWidget* parent = nullptr);
@@ -54,7 +76,7 @@ private slots:
   void on_text_edit_atbash_in_text_changed();
   void on_text_edit_caesar_in_text_changed();
   void on_text_edit_richelieu_in_text_changed();
-
-private:
+  void on_text_edit_gronsfeld_in_text_changed();
+  void on_text_edit_visionary_in_text_changed();
 };
 #endif // WIDGET_H
