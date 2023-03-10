@@ -1,40 +1,47 @@
 #include <QString>
 #include <QStringList>
 
+#define IS_UP_EN(symbol) ((symbol) >= u'A' && (symbol) <= u'Z')
+#define IS_LOW_EN(symbol) ((symbol) >= u'a' && (symbol) <= u'z')
+#define IS_UP_RU(symbol) ((symbol) >= u'А' && (symbol) <= u'Я')
+#define IS_LOW_RU(symbol) ((symbol) >= u'а' && (symbol) <= u'я')
+
 #define UP_EN 155
 #define LOW_EN 219
 #define UP_RU 2111
 #define LOW_RU 2175
 
+#define EN 26
+#define RU 32
+
+enum {ENCRYPT, DECRYPT};
+
 QString atbash(QString text) {
   for (int i = 0; i < text.size(); ++i) {
-    if (text[i] >= u'A' && text[i] <= u'Z')
+    if (IS_UP_EN(text[i]))
       text[i] = (QChar)(UP_EN - text[i].unicode());
-    else if (text[i] >= u'a' && text[i] <= u'z')
+    else if (IS_LOW_EN(text[i]))
       text[i] = (QChar)(LOW_EN - text[i].unicode());
-    else if (text[i] >= u'А' && text[i] <= u'Я')
+    else if (IS_UP_RU(text[i]))
       text[i] = (QChar)(UP_RU - text[i].unicode());
-    else if (text[i] >= u'а' && text[i] <= u'я')
+    else if (IS_LOW_RU(text[i]))
       text[i] = (QChar)(LOW_RU - text[i].unicode());
   }
   return text;
 }
-
-#define EN 26
-#define RU 32
 
 QString caesar(QString text, int step, const int is_decrypt) {
   if (is_decrypt)
     step = ~step + 1;
 
   for (int i = 0; i < text.length(); i++) {
-    if (text[i] >= u'A' && text[i] <= u'Z') {
+    if (IS_UP_EN(text[i])) {
       text[i] = (QChar)(text[i].unicode() + step % EN);
       if (text[i] > u'Z')
         text[i] = (QChar)(text[i].unicode() - EN);
       else if (text[i] < u'A')
         text[i] = (QChar)(text[i].unicode() + EN);
-    } else if (text[i] >= u'a' && text[i] <= u'z') {
+    } else if (IS_LOW_EN(text[i])) {
       text[i] = (QChar)(text[i].unicode() + step % EN);
       if (text[i] > u'z')
         text[i] = (QChar)(text[i].unicode() - EN);
@@ -42,13 +49,13 @@ QString caesar(QString text, int step, const int is_decrypt) {
         text[i] = (QChar)(text[i].unicode() + EN);
     }
 
-    else if (text[i] >= u'А' && text[i] <= u'Я') {
+    else if (IS_UP_RU(text[i])) {
       text[i] = (QChar)(text[i].unicode() + step % RU);
       if (text[i] > u'Я')
         text[i] = (QChar)(text[i].unicode() - RU);
       else if (text[i] < u'А')
         text[i] = (QChar)(text[i].unicode() + RU);
-    } else if (text[i] >= u'а' && text[i] <= u'я') {
+    } else if (IS_LOW_RU(text[i])) {
       text[i] = (QChar)(text[i].unicode() + step % RU);
       if (text[i] > u'я')
         text[i] = (QChar)(text[i].unicode() - RU);
@@ -60,11 +67,7 @@ QString caesar(QString text, int step, const int is_decrypt) {
 }
 
 int richelieu(QString& text, const QString key, const int is_decrypt) {
-  int i = 0, j = 0, key_size = 0;
-  for (i = 0; i < key.size(); ++i) {
-    if (key[i] != ' ' && key[i] != ',' && !key[i].isDigit())
-      return EXIT_FAILURE;
-  }
+  size_t i = 0, j = 0, key_size = 0;
   QStringList blocks = key.split(' ', Qt::SkipEmptyParts);
   QStringList* numbers = new QStringList[blocks.length()];
   for (i = 0; i < blocks.length(); ++i) {
@@ -74,9 +77,11 @@ int richelieu(QString& text, const QString key, const int is_decrypt) {
 
   if (!key_size)
     return EXIT_FAILURE;
+  bool to_int_is_ok;
   for (i = 0; i < blocks.length(); ++i) {
     for (j = 0; j < numbers[i].length(); ++j) {
-      if (numbers[i][j].toInt() > numbers[i].length() || !numbers[i][j].toInt())
+      if (numbers[i][j].toUInt(&to_int_is_ok) > numbers[i].length() ||
+          !to_int_is_ok || !numbers[i][j].toUInt())
         return EXIT_FAILURE;
       for (int k = j + 1; k < numbers[i].length(); ++k) {
         if (numbers[i][j] == numbers[i][k])
@@ -90,15 +95,15 @@ int richelieu(QString& text, const QString key, const int is_decrypt) {
   if (is_decrypt) {
     for (i = 0, j = 0; i < blocks.length(); ++i) {
       for (block_offset = j; j < numbers[i].length() + block_offset; ++j) {
-        result[j] =
-            text[numbers[i][j - block_offset].toInt() - 1 + block_offset];
+        result[j] = text[numbers[i][j - block_offset].toUInt()
+                    - 1 + block_offset];
       }
     }
   } else {
     for (i = 0, j = 0; i < blocks.length(); ++i) {
       for (block_offset = j; j < numbers[i].length() + block_offset; ++j) {
-        result[numbers[i][j - block_offset].toInt() - 1 + block_offset] =
-            text[j];
+        result[numbers[i][j - block_offset].toUInt() 
+               - 1 + block_offset] = text[j];
       }
     }
   }
@@ -109,47 +114,48 @@ int richelieu(QString& text, const QString key, const int is_decrypt) {
 }
 
 int gronsfeld(QString& text, const QString key, const int is_decrypt) {
-  int i, j;
-  for (i = 0; i < key.length(); ++i) {
-    if (key[i] != ',' && key[i] != '-' && !key[i].isDigit())
-      return EXIT_FAILURE;
-  }
   QStringList steps = key.split(',', Qt::SkipEmptyParts);
   if (!steps.length())
     return EXIT_FAILURE;
-  if (is_decrypt)
-    for (i = 0; i < steps.length(); ++i) {
-      if (steps[i][0] == '-')
-        steps[i].remove('-');
-      else
-        steps[i].insert(0, '-');
-    }
 
-  for (i = 0, j = 0; i < text.length(); ++i) {
+  int step;
+  bool to_int_is_ok;
+  for (size_t i = 0, j = 0; i < text.length(); ++i) {
     if (j == steps.length())
       j = 0;
-    if (text[i] >= u'A' && text[i] <= u'Z') {
-      text[i] = (QChar)(text[i].unicode() + steps[j++].toInt() % EN);
+
+    step = steps[j].toInt(&to_int_is_ok);
+    if (!to_int_is_ok)
+      return EXIT_FAILURE;
+    if (is_decrypt)
+      step = ~step + 1;
+
+    if (IS_UP_EN(text[i])) {
+      ++j;
+      text[i] = (QChar)(text[i].unicode() + step % EN);
       if (text[i] > u'Z')
         text[i] = (QChar)(text[i].unicode() - EN);
       else if (text[i] < u'A')
         text[i] = (QChar)(text[i].unicode() + EN);
-    } else if (text[i] >= u'a' && text[i] <= u'z') {
-      text[i] = (QChar)(text[i].unicode() + steps[j++].toInt() % EN);
+    } else if (IS_LOW_EN(text[i])) {
+      ++j;
+      text[i] = (QChar)(text[i].unicode() + step % EN);
       if (text[i] > u'z')
         text[i] = (QChar)(text[i].unicode() - EN);
       else if (text[i] < u'a')
         text[i] = (QChar)(text[i].unicode() + EN);
     }
 
-    else if (text[i] >= u'А' && text[i] <= u'Я') {
-      text[i] = (QChar)(text[i].unicode() + steps[j++].toInt() % RU);
+    else if (IS_UP_RU(text[i])) {
+      ++j;
+      text[i] = (QChar)(text[i].unicode() + step % RU);
       if (text[i] > u'Я')
         text[i] = (QChar)(text[i].unicode() - RU);
       else if (text[i] < u'А')
         text[i] = (QChar)(text[i].unicode() + RU);
-    } else if (text[i] >= u'а' && text[i] <= u'я') {
-      text[i] = (QChar)(text[i].unicode() + steps[j++].toInt() % RU);
+    } else if (IS_LOW_RU(text[i])) {
+      ++j;
+      text[i] = (QChar)(text[i].unicode() + step % RU);
       if (text[i] > u'я')
         text[i] = (QChar)(text[i].unicode() - RU);
       else if (text[i] < u'а')
@@ -162,48 +168,44 @@ int gronsfeld(QString& text, const QString key, const int is_decrypt) {
 int visionary(QString& text, QString key, const int is_decrypt) {
   if (!key.length())
     return EXIT_FAILURE;
-  int i, j;
+  size_t i, j;
   for (i = 0; i < key.length(); ++i) {
     if (!key[i].isLetter())
       return EXIT_FAILURE;
   }
 
   QChar tmp;
-  enum {ENCRYPT, DECRYPT};
   for (i = 0, j = 0; i < text.length(); ++i) {
     if (j == key.length())
       j = 0;
+
     switch (is_decrypt) {
     case ENCRYPT:
-      if ((text[i] >= u'a' && text[i] <= u'z') ||
-          (text[i] >= u'A' && text[i] <= u'Z')) {
+      if (IS_UP_EN(text[i]) || IS_LOW_EN(text[i])) {
         tmp = (QChar)(text[i].unicode() + key[j++].unicode() % EN);
-        if ((text[i] >= u'A' && text[i] <= u'Z' && tmp > u'Z') ||
-            (text[i] >= u'a' && text[i] <= u'z' && tmp > u'z'))
+        if (IS_UP_EN(text[i]) && tmp > u'Z' ||
+            IS_LOW_EN(text[i]) && tmp > u'z')
           tmp = (QChar)(tmp.unicode() - EN);
         text[i] = tmp;
-      } else if ((text[i] >= u'а' && text[i] <= u'я') ||
-                 (text[i] >= u'А' && text[i] <= u'Я')) {
+      } else if (IS_UP_RU(text[i]) || IS_LOW_RU(text[i])) {
         tmp = (QChar)(text[i].unicode() + key[j++].unicode() % RU);
-        if ((text[i] >= u'А' && text[i] <= u'Я' && tmp > u'Я') ||
-            (text[i] >= u'а' && text[i] <= u'я' && tmp > u'я'))
+        if (IS_UP_RU(text[i]) && tmp > u'Я' ||
+            IS_LOW_RU(text[i]) && tmp > u'я')
           tmp = (QChar)(tmp.unicode() - RU);
         text[i] = tmp;
       }
       break;
     case DECRYPT:
-      if ((text[i] >= u'a' && text[i] <= u'z') ||
-          (text[i] >= u'A' && text[i] <= u'Z')) {
+      if (IS_UP_EN(text[i]) || IS_LOW_EN(text[i])) {
         tmp = (QChar)(text[i].unicode() - key[j++].unicode() % EN);
-        if ((text[i] >= u'A' && text[i] <= u'Z' && tmp < u'A') ||
-            (text[i] >= u'a' && text[i] <= u'z' && tmp < u'a'))
+        if (IS_UP_EN(text[i]) && tmp < u'A' ||
+            IS_LOW_EN(text[i]) && tmp < u'a')
           tmp = (QChar)(tmp.unicode() + EN);
         text[i] = tmp;
-      } else if ((text[i] >= u'а' && text[i] <= u'я') ||
-                 (text[i] >= u'А' && text[i] <= u'Я')) {
+      } else if (IS_UP_RU(text[i]) || IS_LOW_RU(text[i])) {
         tmp = (QChar)(text[i].unicode() - key[j++].unicode() % RU);
-        if ((text[i] >= u'А' && text[i] <= u'Я' && tmp < u'А') ||
-            (text[i] >= u'а' && text[i] <= u'я' && tmp < u'а'))
+        if (IS_UP_RU(text[i]) && tmp < u'А' ||
+            IS_LOW_RU(text[i]) && tmp < u'а')
           tmp = (QChar)(tmp.unicode() + RU);
         text[i] = tmp;
       }
