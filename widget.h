@@ -32,8 +32,8 @@ class Widget : public QWidget {
   QTextEdit* tedit_caesar_out;
   QLabel* label_caesar_operation;
   QComboBox* cbox_caesar_operation;
-  QLabel* label_step;
-  QSpinBox* spin_step;
+  QLabel* label_caesar_step;
+  QSpinBox* spin_caesar_step;
 
   QWidget* widget_richelieu;
   QGridLayout* glayout_richelieu;
@@ -68,6 +68,18 @@ class Widget : public QWidget {
   QLabel* label_visionary_operation;
   QComboBox* cbox_visionary_operation;
 
+  QWidget* widget_playfair;
+  QGridLayout* glayout_playfair;
+  QLabel* label_playfair_in;
+  QTextEdit* tedit_playfair_in;
+  QLabel* label_playfair_out;
+  QTextEdit* tedit_playfair_out;
+  QLabel* label_playfair_key;
+  QTextEdit* tedit_playfair_key;
+  QLabel* label_playfair_operation;
+  QComboBox* cbox_playfair_operation;
+
+
 public:
   Widget(QWidget* parent = nullptr);
   ~Widget();
@@ -78,5 +90,6 @@ private slots:
   void on_text_edit_richelieu_in_text_changed();
   void on_text_edit_gronsfeld_in_text_changed();
   void on_text_edit_visionary_in_text_changed();
+  void on_text_edit_playfair_in_text_changed();
 };
 #endif // WIDGET_H

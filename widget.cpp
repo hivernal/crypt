@@ -33,19 +33,19 @@ Widget::Widget(QWidget *parent) : QWidget(parent) {
   cbox_caesar_operation = new QComboBox();
   cbox_caesar_operation->addItem("Encrypt");
   cbox_caesar_operation->addItem("Decrypt");
-  label_step = new QLabel("Step");
-  spin_step = new QSpinBox();
-  spin_step->setRange(-1024, 1024);
-  spin_step->setMaximumWidth(100);
-  spin_step->setAlignment(Qt::AlignCenter);
+  label_caesar_step = new QLabel("Step");
+  spin_caesar_step = new QSpinBox();
+  spin_caesar_step->setRange(-1024, 1024);
+  spin_caesar_step->setMaximumWidth(100);
+  spin_caesar_step->setAlignment(Qt::AlignCenter);
   glayout_caesar->addWidget(label_caesar_in, 0, 0);
   glayout_caesar->addWidget(tedit_caesar_in, 0, 1);
   glayout_caesar->addWidget(label_caesar_out, 1, 0);
   glayout_caesar->addWidget(tedit_caesar_out, 1, 1);
   glayout_caesar->addWidget(label_caesar_operation, 2, 0);
   glayout_caesar->addWidget(cbox_caesar_operation, 2, 1);
-  glayout_caesar->addWidget(label_step, 3, 0);
-  glayout_caesar->addWidget(spin_step, 3, 1);
+  glayout_caesar->addWidget(label_caesar_step, 3, 0);
+  glayout_caesar->addWidget(spin_caesar_step, 3, 1);
 
   widget_richelieu = new QWidget();
   glayout_richelieu = new QGridLayout(widget_richelieu);
@@ -116,94 +116,142 @@ Widget::Widget(QWidget *parent) : QWidget(parent) {
   glayout_visionary->addWidget(label_visionary_operation, 3, 0);
   glayout_visionary->addWidget(cbox_visionary_operation, 3, 1);
 
+  widget_playfair = new QWidget();
+  glayout_playfair = new QGridLayout(widget_playfair);
+  label_playfair_in = new QLabel("Original");
+  tedit_playfair_in = new QTextEdit();
+  label_playfair_out = new QLabel("Result");
+  tedit_playfair_out = new QTextEdit();
+  label_playfair_key = new QLabel("Key");
+  tedit_playfair_key = new QTextEdit();
+  tedit_playfair_key->setMaximumHeight(30);
+  tedit_playfair_key->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  label_playfair_operation = new QLabel("Operation");
+  cbox_playfair_operation = new QComboBox();
+  cbox_playfair_operation->addItem("Encrypt");
+  cbox_playfair_operation->addItem("Decrypt");
+  glayout_playfair->addWidget(label_playfair_in, 0, 0);
+  glayout_playfair->addWidget(tedit_playfair_in, 0, 1);
+  glayout_playfair->addWidget(label_playfair_out, 1, 0);
+  glayout_playfair->addWidget(tedit_playfair_out, 1, 1);
+  glayout_playfair->addWidget(label_playfair_key, 2, 0);
+  glayout_playfair->addWidget(tedit_playfair_key, 2, 1);
+  glayout_playfair->addWidget(label_playfair_operation, 3, 0);
+  glayout_playfair->addWidget(cbox_playfair_operation, 3, 1);
+
   tab_widget = new QTabWidget();
   tab_widget->addTab(widget_atbash, "Atbash");
   tab_widget->addTab(widget_caesar, "Caesar");
   tab_widget->addTab(widget_richelieu, "Richelieu");
   tab_widget->addTab(widget_gronsfeld, "Gronsfeld");
   tab_widget->addTab(widget_visionary, "Visionary");
+  tab_widget->addTab(widget_playfair, "Playfair");
   glayout_main = new QGridLayout(this);
   glayout_main->addWidget(tab_widget);
 
   connect(tedit_atbash_in, &QTextEdit::textChanged, this,
           &Widget::on_text_edit_atbash_in_text_changed);
+
   connect(tedit_caesar_in, &QTextEdit::textChanged, this,
           &Widget::on_text_edit_caesar_in_text_changed);
-  connect(spin_step, &QSpinBox::valueChanged, this,
+  connect(spin_caesar_step, &QSpinBox::valueChanged, this,
           &Widget::on_text_edit_caesar_in_text_changed);
   connect(cbox_caesar_operation, &QComboBox::currentIndexChanged, this,
           &Widget::on_text_edit_caesar_in_text_changed);
+
   connect(tedit_richelieu_in, &QTextEdit::textChanged, this,
           &Widget::on_text_edit_richelieu_in_text_changed);
   connect(tedit_richelieu_key, &QTextEdit::textChanged, this,
           &Widget::on_text_edit_richelieu_in_text_changed);
   connect(cbox_richelieu_operation, &QComboBox::currentIndexChanged, this,
           &Widget::on_text_edit_richelieu_in_text_changed);
+
   connect(tedit_gronsfeld_in, &QTextEdit::textChanged, this,
           &Widget::on_text_edit_gronsfeld_in_text_changed);
   connect(tedit_gronsfeld_key, &QTextEdit::textChanged, this,
           &Widget::on_text_edit_gronsfeld_in_text_changed);
   connect(cbox_gronsfeld_operation, &QComboBox::currentIndexChanged, this,
           &Widget::on_text_edit_gronsfeld_in_text_changed);
+
   connect(tedit_visionary_in, &QTextEdit::textChanged, this,
           &Widget::on_text_edit_visionary_in_text_changed);
   connect(tedit_visionary_key, &QTextEdit::textChanged, this,
           &Widget::on_text_edit_visionary_in_text_changed);
   connect(cbox_visionary_operation, &QComboBox::currentIndexChanged, this,
           &Widget::on_text_edit_visionary_in_text_changed);
+
+  connect(tedit_playfair_in, &QTextEdit::textChanged, this,
+          &Widget::on_text_edit_playfair_in_text_changed);
+  connect(tedit_playfair_key, &QTextEdit::textChanged, this,
+          &Widget::on_text_edit_playfair_in_text_changed);
+  connect(cbox_playfair_operation, &QComboBox::currentIndexChanged, this,
+          &Widget::on_text_edit_playfair_in_text_changed);
 }
 
 Widget::~Widget() {
   delete label_atbash_in;
+  delete tedit_atbash_in;
+  delete tedit_atbash_out;
   delete label_atbash_out;
+  delete glayout_atbash;
+  delete widget_atbash;
+
   delete label_caesar_in;
   delete label_caesar_out;
   delete label_caesar_operation;
-  delete label_step;
+  delete label_caesar_step;
+  delete tedit_caesar_in;
+  delete tedit_caesar_out;
+  delete glayout_caesar;
+  delete cbox_caesar_operation;
+  delete spin_caesar_step;
+  delete widget_caesar;
+
   delete label_richelieu_in;
   delete label_richelieu_out;
   delete label_richelieu_key;
   delete label_richelieu_operation;
+  delete tedit_richelieu_in;
+  delete tedit_richelieu_out;
+  delete tedit_richelieu_key;
+  delete glayout_richelieu;
+  delete cbox_richelieu_operation;
+  delete widget_richelieu;
+
   delete label_gronsfeld_in;
   delete label_gronsfeld_out;
   delete label_gronsfeld_key;
   delete label_gronsfeld_operation;
+  delete tedit_gronsfeld_in;
+  delete tedit_gronsfeld_out;
+  delete tedit_gronsfeld_key;
+  delete glayout_gronsfeld;
+  delete cbox_gronsfeld_operation;
+  delete widget_gronsfeld;
+
   delete label_visionary_in;
   delete label_visionary_out;
   delete label_visionary_key;
   delete label_visionary_operation;
-
-  delete tedit_atbash_in;
-  delete tedit_atbash_out;
-  delete tedit_caesar_in;
-  delete tedit_caesar_out;
-  delete tedit_richelieu_in;
-  delete tedit_richelieu_out;
-  delete tedit_richelieu_key;
-  delete tedit_gronsfeld_in;
-  delete tedit_gronsfeld_out;
-  delete tedit_gronsfeld_key;
   delete tedit_visionary_in;
   delete tedit_visionary_out;
   delete tedit_visionary_key;
-
-  delete glayout_caesar;
-  delete glayout_atbash;
-  delete glayout_richelieu;
-  delete glayout_gronsfeld;
   delete glayout_visionary;
-  delete glayout_main;
-  
-  delete spin_step;
-  delete cbox_caesar_operation;
-  delete cbox_richelieu_operation;
-  delete cbox_gronsfeld_operation;
   delete cbox_visionary_operation;
-  delete widget_caesar;
-  delete widget_atbash;
-  delete widget_richelieu;
-  delete widget_gronsfeld;
   delete widget_visionary;
+
+  delete label_playfair_in;
+  delete label_playfair_out;
+  delete label_playfair_key;
+  delete label_playfair_operation;
+  delete tedit_playfair_in;
+  delete tedit_playfair_out;
+  delete tedit_playfair_key;
+  delete glayout_playfair;
+  delete cbox_playfair_operation;
+  delete widget_playfair;
+
+  delete glayout_main;
   delete tab_widget;
 }
 
@@ -213,7 +261,7 @@ void Widget::on_text_edit_atbash_in_text_changed() {
 }
 
 void Widget::on_text_edit_caesar_in_text_changed() {
-  int step = spin_step->value();
+  int step = spin_caesar_step->value();
   QString qstr = tedit_caesar_in->toPlainText();
   int is_decrypt = 0;
   if (cbox_caesar_operation->currentIndex())
@@ -242,6 +290,7 @@ void Widget::on_text_edit_gronsfeld_in_text_changed() {
   else
     tedit_gronsfeld_out->setText(text);
 }
+
 void Widget::on_text_edit_visionary_in_text_changed() {
   QString text = tedit_visionary_in->toPlainText();
   int is_decrypt = 0;
@@ -251,4 +300,8 @@ void Widget::on_text_edit_visionary_in_text_changed() {
     tedit_visionary_out->setText("Incorrect key!");
   else
     tedit_visionary_out->setText(text);
+}
+
+void Widget::on_text_edit_playfair_in_text_changed() {
+  QString text = tedit_playfair_in->toPlainText();
 }
