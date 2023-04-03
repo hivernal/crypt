@@ -1,7 +1,6 @@
 #include "widget.h"
 
 #include <QApplication>
-int richelieu(QString &text, const QString key);
 
 int main(int argc, char *argv[]) {
   QApplication a(argc, argv);

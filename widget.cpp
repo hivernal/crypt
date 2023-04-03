@@ -1,12 +1,11 @@
 #include "widget.h"
 
-#include <QString>
-
 QString atbash(QString text);
-QString caesar(QString text, int step, const int is_decrypt);
-int richelieu(QString& text, const QString key, const int is_decrypt);
-int gronsfeld(QString& text, const QString key, const int is_decrypt);
-int visionary(QString& text, const QString key, const int is_decrypt);
+QString caesar(QString text, int step, bool is_decrypt);
+int richelieu(QString& text, QString key, bool is_decrypt);
+int gronsfeld(QString& text, QString key, bool is_decrypt);
+int visionary(QString& text, QString key, bool is_decrypt);
+int playfair(QString& text, QString key, bool is_decrypt);
 
 Widget::Widget(QWidget *parent) : QWidget(parent) {
   this->setWindowTitle("Encryption");
@@ -263,17 +262,17 @@ void Widget::on_text_edit_atbash_in_text_changed() {
 void Widget::on_text_edit_caesar_in_text_changed() {
   int step = spin_caesar_step->value();
   QString qstr = tedit_caesar_in->toPlainText();
-  int is_decrypt = 0;
+  bool is_decrypt = false;
   if (cbox_caesar_operation->currentIndex())
-    is_decrypt = 1;
+    is_decrypt = true;
   tedit_caesar_out->setText(caesar(qstr, step, is_decrypt));
 }
 
 void Widget::on_text_edit_richelieu_in_text_changed() {
   QString text = tedit_richelieu_in->toPlainText();
-  int is_decrypt = 0;
+  bool is_decrypt = false;
   if (cbox_richelieu_operation->currentIndex())
-    is_decrypt = 1;
+    is_decrypt = true;
   if (richelieu(text, tedit_richelieu_key->toPlainText(), is_decrypt))
     tedit_richelieu_out->setText("Incorrect key!");
   else
@@ -282,9 +281,9 @@ void Widget::on_text_edit_richelieu_in_text_changed() {
 
 void Widget::on_text_edit_gronsfeld_in_text_changed() {
   QString text = tedit_gronsfeld_in->toPlainText();
-  int is_decrypt = 0;
+  bool is_decrypt = false;
   if (cbox_gronsfeld_operation->currentIndex())
-    is_decrypt = 1;
+    is_decrypt = true;
   if (gronsfeld(text, tedit_gronsfeld_key->toPlainText(), is_decrypt))
     tedit_gronsfeld_out->setText("Incorrect key!");
   else
@@ -293,9 +292,9 @@ void Widget::on_text_edit_gronsfeld_in_text_changed() {
 
 void Widget::on_text_edit_visionary_in_text_changed() {
   QString text = tedit_visionary_in->toPlainText();
-  int is_decrypt = 0;
+  bool is_decrypt = false;
   if (cbox_visionary_operation->currentIndex())
-    is_decrypt = 1;
+    is_decrypt = true;
   if (visionary(text, tedit_visionary_key->toPlainText(), is_decrypt))
     tedit_visionary_out->setText("Incorrect key!");
   else
@@ -304,4 +303,11 @@ void Widget::on_text_edit_visionary_in_text_changed() {
 
 void Widget::on_text_edit_playfair_in_text_changed() {
   QString text = tedit_playfair_in->toPlainText();
+  bool is_decrypt = false;
+  if (cbox_playfair_operation->currentIndex())
+    is_decrypt = true;
+  if (playfair(text, tedit_playfair_key->toPlainText(), is_decrypt))
+    tedit_playfair_out->setText("Incorrect key!");
+  else
+    tedit_playfair_out->setText(text);
 }
