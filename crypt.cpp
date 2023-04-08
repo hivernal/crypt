@@ -295,5 +295,14 @@ int playfair(QString& text, QString key, bool is_decrypt) {
     }
   }
 
+  /* text.push_back('\n');
+  for (i = 0; i < NROWS; ++i) {
+    for (j = 0; j < NCOLUMNS; ++j) {
+      text.push_back(matrix[i][j]);
+      text.push_back(' ');
+    }
+      text.push_back('\n');
+  } */
+
   return EXIT_SUCCESS;
 }
