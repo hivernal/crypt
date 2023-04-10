@@ -1,13 +1,8 @@
 #include "widget.h"
 
-QString atbash(QString text);
-QString caesar(QString text, int step, bool is_decrypt);
-int richelieu(QString& text, QString key, bool is_decrypt);
-int gronsfeld(QString& text, QString key, bool is_decrypt);
-int visionary(QString& text, QString key, bool is_decrypt);
-int playfair(QString& text, QString key, bool is_decrypt);
+#include "crypt.h"
 
-Widget::Widget(QWidget *parent) : QWidget(parent) {
+Widget::Widget(QWidget* parent) : QWidget(parent) {
   this->setWindowTitle("Encryption");
   this->setMaximumSize(700, 500);
 

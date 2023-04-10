@@ -1,20 +1,9 @@
 #include <QString>
 #include <QStringList>
 
-#define IS_UP_EN(symbol) ((symbol) >= u'A' && (symbol) <= u'Z')
-#define IS_LOW_EN(symbol) ((symbol) >= u'a' && (symbol) <= u'z')
-#define IS_UP_RU(symbol) ((symbol) >= u'А' && (symbol) <= u'Я')
-#define IS_LOW_RU(symbol) ((symbol) >= u'а' && (symbol) <= u'я')
-#define IS_EN(symbol) (IS_LOW_EN(symbol) && IS_UP_EN(symbol))
-#define IS_RU(symbol) (IS_LOW_RU(symbol) && IS_UP_RU(symbol))
+#include <iostream>
 
-#define UP_EN 155
-#define LOW_EN 219
-#define UP_RU 2111
-#define LOW_RU 2175
-
-#define EN 26
-#define RU 32
+#include "crypt.h"
 
 QString atbash(QString text) {
   for (int i = 0; i < text.size(); ++i) {
@@ -101,7 +90,7 @@ int richelieu(QString& text, QString key, bool is_decrypt) {
     for (i = 0, j = 0; i < blocks.length(); ++i) {
       for (block_offset = j; j < numbers[i].length() + block_offset; ++j) {
         result[j] = text[numbers[i][j - block_offset].toUInt()
-                    - 1 + block_offset];
+                         - 1 + block_offset];
       }
     }
   } else {
@@ -295,14 +284,17 @@ int playfair(QString& text, QString key, bool is_decrypt) {
     }
   }
 
-  /* text.push_back('\n');
+  std::wcout << std::endl;
   for (i = 0; i < NROWS; ++i) {
+    QString qstr;
+    qstr.clear();
     for (j = 0; j < NCOLUMNS; ++j) {
-      text.push_back(matrix[i][j]);
-      text.push_back(' ');
+      qstr.push_back(matrix[i][j]);
+      qstr.push_back(' ');
     }
-      text.push_back('\n');
-  } */
+    std::wcout << qstr.toStdWString();
+    std::wcout << std::endl;
+  }
 
   return EXIT_SUCCESS;
 }
