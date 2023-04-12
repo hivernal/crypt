@@ -12,14 +12,39 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Charts)
 
 set(PROJECT_SOURCES
-        main.cpp
-        widget.cpp
-        widget.h
-        crypt.cpp
-        crypt.h
-)
+    main.cpp
+    crypt.cpp
+    crypt.h
+    macros.h
+    atbash/atbash.cpp
+    atbash/atbash.h
+    caesar/caesar.cpp
+    caesar/caesar.h
+    richelieu/richelieu.cpp
+    richelieu/richelieu.h
+    gronsfeld/gronsfeld.cpp
+    gronsfeld/gronsfeld.h
+    visionary/visionary.cpp
+    visionary/visionary.h
+    playfair/playfair.cpp
+    playfair/playfair.h
+    analysis/analysis.cpp
+    analysis/analysis.h
+    )
+
+set(INCLUDE_DIRECTORIES
+    ${CMAKE_SOURCE_DIR}
+    atbash 
+    caesar
+    richelieu
+    gronsfeld 
+    visionary
+    playfair
+    analysis
+    )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(crypt
@@ -44,7 +69,8 @@ else()
     endif()
 endif()
 
-target_link_libraries(crypt PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(crypt PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt6::Charts)
+target_include_directories(crypt PRIVATE ${INCLUDE_DIRECTORIES})
 
 set_target_properties(crypt PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

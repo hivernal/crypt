@@ -1,10 +1,10 @@
-#include "widget.h"
+#include "crypt.h"
 
 #include <QApplication>
 
 int main(int argc, char *argv[]) {
   QApplication a(argc, argv);
-  Widget w;
+  Crypt w;
   w.show();
   return a.exec();
 }
