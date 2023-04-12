@@ -1,7 +1,5 @@
 #include "playfair.h"
 
-#include <iostream>
-
 #define NROWS 11
 #define NCOLUMNS 11
 
@@ -77,18 +75,14 @@ int playfair(QString& text, QString key, bool is_decrypt) {
     }
   }
 
-  std::wcout << std::endl;
+  QTextStream out(stdout);
+  out << '\n';
   for (i = 0; i < NROWS; ++i) {
-    QString qstr;
-    qstr.clear();
     for (j = 0; j < NCOLUMNS; ++j) {
-      qstr.push_back(matrix[i][j]);
-      qstr.push_back(' ');
+      out << matrix[i][j] << ' ';
     }
-    std::wcout << qstr.toStdWString();
-    std::wcout << std::endl;
+    out << '\n';
   }
-
   return EXIT_SUCCESS;
 }
 
