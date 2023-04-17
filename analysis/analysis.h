@@ -7,6 +7,7 @@
 #include <QTextEdit>
 #include <QPushButton>
 #include <QtCharts>
+#include <QScrollArea>
 
 class Analysis : public QWidget {
   QWidget* widget;
@@ -18,6 +19,9 @@ class Analysis : public QWidget {
   QChart* chart;
   QValueAxis* axisY;
   QChartView* chartView;
+  QBarCategoryAxis* axisX;
+
+  QScrollArea* scroll;
 
 public:
   Analysis();

@@ -17,26 +17,39 @@ int analysis(const QString& file_name, QMap<QChar, qsizetype> &symbols) {
 Analysis::Analysis() {
   widget = new QWidget();
   glayout = new QGridLayout(widget);
+
   labelFile = new QLabel("File: ");
   teditFile = new QTextEdit();
   teditFile->setMaximumHeight(30);
   teditFile->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   pbuttonFile = new QPushButton("open");
+
   bseries = new QBarSeries();
   chart = new QChart();
-  chart->addSeries(bseries);
   chart->setTitle("Cryptoanalysis");
-  chart->setAnimationOptions(QChart::SeriesAnimations);
+  chart->addSeries(bseries);
+  chart->legend()->setVisible(false);
+
   axisY = new QValueAxis();
+  axisY->setTickType(QValueAxis::TicksDynamic);
+  axisY->setTickInterval(4);
+  axisY->setMinorTickCount(3);
+  axisY->setLabelFormat("%d");
+  axisX = new QBarCategoryAxis();
   chart->addAxis(axisY, Qt::AlignLeft);
-  bseries->attachAxis(axisY); chart->legend()->setVisible(true);
-  chart->legend()->setAlignment(Qt::AlignRight);
+  chart->addAxis(axisX, Qt::AlignBottom);
+  bseries->attachAxis(axisY); 
+  bseries->attachAxis(axisX); 
+
   chartView = new QChartView(chart);
-  chartView->setRenderHint(QPainter::Antialiasing);
+  scroll = new QScrollArea();
+  scroll->setWidget(chartView);
+  scroll->setWidgetResizable(true);
+
   glayout->addWidget(labelFile, 0, 0);
   glayout->addWidget(teditFile, 0, 1);
   glayout->addWidget(pbuttonFile, 0, 2);
-  glayout->addWidget(chartView, 1, 0, 1, 3);
+  glayout->addWidget(scroll, 1, 0, 1, 3);
   connect(pbuttonFile, &QPushButton::clicked, this,
           &Analysis::pbuttonFileClicked);
   connect(teditFile, &QTextEdit::textChanged, this,
@@ -52,23 +65,21 @@ void Analysis::teditFileChanged() {
   QMap<QChar, qsizetype> symbols;
   if (!analysis(teditFile->toPlainText(), symbols)) {
     bseries->clear();
-    chart->removeSeries(bseries);
-    qsizetype size = 0;
+    QBarSet* letters = new QBarSet("");
+    QStringList categories;
+    qsizetype max = 0;
     for (QMap<QChar, qsizetype>::iterator it = symbols.begin();
          it != symbols.end(); ++it) {
-      size += it.value();
+      if (it.value() > max)
+        max = it.value();
+      *letters << it.value();
+      categories << it.key();
     }
-    for (QMap<QChar, qsizetype>::iterator it = symbols.begin();
-         it != symbols.end(); ++it) {
-      QString str = it.key();
-      str += '(' + QString::number((double)it.value()/size, 'g', 2)+ ')';
-      QBarSet* symbol = new QBarSet(str);
-      *symbol << it.value();
-      bseries->append(symbol);
-    }
-    chart->addSeries(bseries);
-    axisY->setRange(0, size);
-    axisY->setLabelFormat("%d");
+    bseries->append(letters);
+    axisX->setCategories(categories);
+    axisY->setMax(max);
+    chartView->setMinimumWidth(categories.count() * 35);
+    chartView->setMinimumHeight(max * 13);
   }
 }
 
@@ -82,6 +93,7 @@ Analysis::~Analysis() {
   delete pbuttonFile;
   delete bseries;
   delete axisY;
+  delete axisX;
   delete chart;
   delete chartView;
   delete glayout;
