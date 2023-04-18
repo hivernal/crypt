@@ -11,6 +11,7 @@
 #include "visionary.h"
 #include "playfair.h"
 #include "analysis.h"
+#include "scaling.h"
 
 class Crypt : public QWidget {
   Q_OBJECT
@@ -22,6 +23,7 @@ class Crypt : public QWidget {
   Visionary* visionary;
   Playfair* playfair;
   Analysis* analysis;
+  Scaling* scaling;
 
   QTabWidget* tab_widget;
   QGridLayout* glayout_main;

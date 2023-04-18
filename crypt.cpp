@@ -27,6 +27,9 @@ Crypt::Crypt(QWidget* parent) : QWidget(parent) {
   analysis = new Analysis();
   tab_widget->addTab(analysis->getWidget(), "Analysis");
 
+  scaling = new Scaling();
+  tab_widget->addTab(scaling->getWidget(), "Scaling");
+
   glayout_main = new QGridLayout(this);
   glayout_main->addWidget(tab_widget);
 }
@@ -39,6 +42,7 @@ Crypt::~Crypt() {
   delete visionary;
   delete playfair;
   delete analysis;
+  delete scaling;
 
   delete glayout_main;
   delete tab_widget;

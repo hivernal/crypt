@@ -6,22 +6,27 @@
 #include <QLabel>
 #include <QTextEdit>
 #include <QPushButton>
-#include <QtCharts>
-#include <QScrollArea>
+
+#include "barchart.h"
 
 class Analysis : public QWidget {
   QWidget* widget;
   QGridLayout* glayout;
+
   QLabel* labelFile;
   QTextEdit* teditFile;
   QPushButton* pbuttonFile;
-  QBarSeries* bseries;
-  QChart* chart;
-  QValueAxis* axisY;
-  QChartView* chartView;
-  QBarCategoryAxis* axisX;
 
-  QScrollArea* scroll;
+  QLabel* labelIn;
+  QTextEdit* teditIn;
+
+  QLabel* labelOut;
+  QTextEdit* teditOut;
+
+  QLabel* labelFrom;
+  QComboBox* cboxFrom;
+
+  BarChart* barchart;
 
 public:
   Analysis();
@@ -31,6 +36,7 @@ public:
 private slots:
   void pbuttonFileClicked();
   void teditFileChanged();
+  void teditTextChanged();
 };
 
 #endif

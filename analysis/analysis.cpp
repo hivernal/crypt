@@ -1,16 +1,76 @@
 #include "analysis.h"
+#include "macros.h"
 
-int analysis(const QString& file_name, QMap<QChar, qsizetype> &symbols) {
-  QFile file_in(file_name);
-  if (!file_in.open(QIODevice::ReadOnly))
-    return EXIT_FAILURE;
-  QTextStream input(&file_in);
-  QString text = input.readAll();
-  for (qsizetype i = 0; i < text.length() - 1; ++i) {
+const QString en_symbols = "ETAONISRHLDCUPFMWYBGVKQXJZ";
+const float en_probties[] = {0.123, 0.096, 0.081, 0.079, 0.072, 0.071, 0.066, 0.06,
+                             0.051, 0.04, 0.036, 0.032, 0.031, 0.023, 0.023, 0.022, 
+                             0.02, 0.019, 0.016, 0.016, 0.009, 0.005, 0.002, 0.002,
+                             0.001, 0.001};
+const QString ru_symbols = " ОЕАИНТСРВЛКМДПУЯЫЗЪБГЧЙХЖЮШЦЩЭФ";
+const float ru_probties[] = {0.175, 0.09, 0.072, 0.062, 0.062, 0.053, 0.053, 0.045,
+                             0.04, 0.038, 0.035, 0.028, 0.026, 0.025, 0.023, 0.021, 
+                             0.018, 0.016, 0.016, 0.014, 0.014, 0.013, 0.012, 0.001,
+                             0.009, 0.007, 0.006, 0.006, 0.004, 0.003, 0.003, 0.002};
+
+int analysis(QString& text, QMap<QChar, qsizetype>& symbols, bool from_file) {
+  if (from_file) {
+    QFile file_in(text);
+    if (!file_in.open(QIODevice::ReadOnly))
+      return EXIT_FAILURE;
+    QTextStream input(&file_in);
+    text = input.readAll();
+    file_in.close();
+  }
+
+  qsizetype amount = 0;
+  for (qsizetype i = 0; i < text.length(); ++i) {
+    bool is_low = false;
+    if (text[i] == '\n' || text[i] == '\t')
+      continue;
+    if (text[i].isLower()) {
+      is_low = true;
+      text[i] = text[i].toUpper();
+    }
+    ++amount;
     if (text[i].isLetter())
       ++symbols[text[i]];
+    if (is_low)
+      text[i] = text[i].toLower();
   }
-  file_in.close();
+
+  QTextStream out(stdout);
+  out << Qt::endl;
+  for (QMap<QChar, qsizetype>::iterator it = symbols.begin();
+       it != symbols.end(); ++it) {
+    out << it.key() << " -> " << (float) it.value() / amount << Qt::endl;
+  }
+
+  for (qsizetype i = 0; i < text.length(); ++i) {
+    bool is_low = false;
+    if (text[i].isLower()) {
+      is_low = true;
+      text[i] = text[i].toUpper();
+    }
+    if (IS_UP_EN(text[i])) {
+      float probty = (float) symbols[text[i]] / amount;
+      qsizetype i1 = 0, i2 = 1;
+      for (;i2 < EN && en_probties[i2] > probty; ++i1, ++i2);
+      if (probty - en_probties[i2] < en_probties[i1] - probty)
+        text[i] = en_symbols[i2];
+      else
+        text[i] = en_symbols[i1];
+    } else if (IS_UP_RU(text[i])) {
+      float probty = (float) symbols[text[i]] / amount;
+      qsizetype i1 = 0, i2 = 1;
+      for (;i2 < RU && ru_probties[i2] > probty; ++i1, ++i2);
+      if (probty - ru_probties[i2] < ru_probties[i1] - probty)
+        text[i] = ru_symbols[i2];
+      else
+        text[i] = ru_symbols[i1];
+    }
+    if (is_low)
+      text[i] = text[i].toLower();
+  }
   return EXIT_SUCCESS;
 }
 
@@ -24,36 +84,38 @@ Analysis::Analysis() {
   teditFile->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   pbuttonFile = new QPushButton("open");
 
-  bseries = new QBarSeries();
-  chart = new QChart();
-  chart->setTitle("Cryptoanalysis");
-  chart->addSeries(bseries);
-  chart->legend()->setVisible(false);
+  labelIn = new QLabel("Text: ");
+  teditIn = new QTextEdit();
 
-  axisY = new QValueAxis();
-  axisY->setTickType(QValueAxis::TicksDynamic);
-  axisY->setTickInterval(4);
-  axisY->setMinorTickCount(3);
-  axisY->setLabelFormat("%d");
-  axisX = new QBarCategoryAxis();
-  chart->addAxis(axisY, Qt::AlignLeft);
-  chart->addAxis(axisX, Qt::AlignBottom);
-  bseries->attachAxis(axisY); 
-  bseries->attachAxis(axisX); 
+  labelOut = new QLabel("Result: ");
+  teditOut = new QTextEdit();
 
-  chartView = new QChartView(chart);
-  scroll = new QScrollArea();
-  scroll->setWidget(chartView);
-  scroll->setWidgetResizable(true);
+  labelFrom = new QLabel("Read from: ");
+  cboxFrom = new QComboBox();
+  cboxFrom->addItem("File");
+  cboxFrom->addItem("Text box");
+
+  barchart = nullptr;
 
   glayout->addWidget(labelFile, 0, 0);
   glayout->addWidget(teditFile, 0, 1);
   glayout->addWidget(pbuttonFile, 0, 2);
-  glayout->addWidget(scroll, 1, 0, 1, 3);
+
+  glayout->addWidget(labelIn, 1, 0);
+  glayout->addWidget(teditIn, 1, 1, 1, 2);
+
+  glayout->addWidget(labelOut, 2, 0);
+  glayout->addWidget(teditOut, 2, 1, 1, 2);
+
+  glayout->addWidget(labelFrom, 3, 0);
+  glayout->addWidget(cboxFrom, 3,  1, 1, 2);
+
   connect(pbuttonFile, &QPushButton::clicked, this,
           &Analysis::pbuttonFileClicked);
   connect(teditFile, &QTextEdit::textChanged, this,
           &Analysis::teditFileChanged);
+  connect(teditIn, &QTextEdit::textChanged, this,
+          &Analysis::teditTextChanged);
 }
 
 void Analysis::pbuttonFileClicked() {
@@ -62,24 +124,30 @@ void Analysis::pbuttonFileClicked() {
 }
 
 void Analysis::teditFileChanged() {
+  if (cboxFrom->currentIndex())
+    return;
+  QString text = teditFile->toPlainText();
   QMap<QChar, qsizetype> symbols;
-  if (!analysis(teditFile->toPlainText(), symbols)) {
-    bseries->clear();
-    QBarSet* letters = new QBarSet("");
-    QStringList categories;
-    qsizetype max = 0;
-    for (QMap<QChar, qsizetype>::iterator it = symbols.begin();
-         it != symbols.end(); ++it) {
-      if (it.value() > max)
-        max = it.value();
-      *letters << it.value();
-      categories << it.key();
-    }
-    bseries->append(letters);
-    axisX->setCategories(categories);
-    axisY->setMax(max);
-    chartView->setMinimumWidth(categories.count() * 35);
-    chartView->setMinimumHeight(max * 13);
+  if (!analysis(text, symbols, true)) {
+    teditOut->setText(text);
+    if (barchart == nullptr)
+      barchart = new BarChart();
+    barchart->show();
+    barchart->draw(symbols);
+  }
+}
+
+void Analysis::teditTextChanged() {
+  if (!cboxFrom->currentIndex())
+    return;
+  QString text = teditIn->toPlainText();
+  QMap<QChar, qsizetype> symbols;
+  if (!analysis(text, symbols, false)) {
+    teditOut->setText(text);
+    if (barchart == nullptr)
+      barchart = new BarChart();
+    barchart->show();
+    barchart->draw(symbols);
   }
 }
 
@@ -88,14 +156,16 @@ QWidget* Analysis::getWidget() {
 }
 
 Analysis::~Analysis() {
+  delete barchart;
   delete labelFile;
   delete teditFile;
   delete pbuttonFile;
-  delete bseries;
-  delete axisY;
-  delete axisX;
-  delete chart;
-  delete chartView;
+  delete labelIn;
+  delete teditIn;
+  delete labelOut;
+  delete teditOut;
+  delete labelFrom;
+  delete cboxFrom;
   delete glayout;
   delete widget;
 }

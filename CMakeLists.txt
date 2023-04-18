@@ -33,6 +33,10 @@ set(PROJECT_SOURCES
     playfair/playfair.h
     analysis/analysis.cpp
     analysis/analysis.h
+    analysis/barchart.cpp
+    analysis/barchart.h
+    scaling/scaling.cpp
+    scaling/scaling.h
     )
 
 set(INCLUDE_DIRECTORIES
@@ -44,6 +48,7 @@ set(INCLUDE_DIRECTORIES
     visionary
     playfair
     analysis
+    scaling
     )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

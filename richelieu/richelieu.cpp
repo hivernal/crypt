@@ -55,8 +55,8 @@ int richelieu(QString& text, QString key, bool is_decrypt) {
 Richelieu::Richelieu() {
   labelKey = new QLabel("Key");
   teditKey = new QTextEdit();
-  teditKey->setMaximumHeight(30);
-  teditKey->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  // teditKey->setMaximumHeight(30);
+  // teditKey->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   labelOperation = new QLabel("Operation");
   cboxOperation = new QComboBox();
   cboxOperation->addItem("Encrypt");
