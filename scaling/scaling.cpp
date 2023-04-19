@@ -3,66 +3,15 @@
 
 #include <QList>
 
-void gen(QList<int>& gamma, int m, int a, int c, int x0) {
+int gronsfeld(QString& text, QString key, bool is_decrypt);
+
+void genGamma(QList<int>& gamma, int m, int a, int c, int x0) {
   gamma.push_back(x0);
   for (int i = 1; i < m; ++i) {
     x0 = (x0 * a + c) % m;
     gamma.push_back(x0);
   }
 }
-
-int scaling(QString& text, QString key, bool is_decrypt) {
-  QStringList steps = key.split(',', Qt::SkipEmptyParts);
-  if (!steps.length())
-    return EXIT_FAILURE;
-
-  int step;
-  bool to_int_is_ok;
-  for (size_t i = 0, j = 0; i < text.length(); ++i) {
-    if (j == steps.length())
-      j = 0;
-
-    step = steps[j].toInt(&to_int_is_ok);
-    if (!to_int_is_ok)
-      return EXIT_FAILURE;
-    if (is_decrypt)
-      step = ~step + 1;
-
-    if (IS_UP_EN(text[i])) {
-      ++j;
-      text[i] = (QChar)(text[i].unicode() + step % EN);
-      if (text[i] > u'Z')
-        text[i] = (QChar)(text[i].unicode() - EN);
-      else if (text[i] < u'A')
-        text[i] = (QChar)(text[i].unicode() + EN);
-    } else if (IS_LOW_EN(text[i])) {
-      ++j;
-      text[i] = (QChar)(text[i].unicode() + step % EN);
-      if (text[i] > u'z')
-        text[i] = (QChar)(text[i].unicode() - EN);
-      else if (text[i] < u'a')
-        text[i] = (QChar)(text[i].unicode() + EN);
-    }
-
-    else if (IS_UP_RU(text[i])) {
-      ++j;
-      text[i] = (QChar)(text[i].unicode() + step % RU);
-      if (text[i] > u'Я')
-        text[i] = (QChar)(text[i].unicode() - RU);
-      else if (text[i] < u'А')
-        text[i] = (QChar)(text[i].unicode() + RU);
-    } else if (IS_LOW_RU(text[i])) {
-      ++j;
-      text[i] = (QChar)(text[i].unicode() + step % RU);
-      if (text[i] > u'я')
-        text[i] = (QChar)(text[i].unicode() - RU);
-      else if (text[i] < u'а')
-        text[i] = (QChar)(text[i].unicode() + RU);
-    }
-  }
-  return EXIT_SUCCESS;
-}
-
 Scaling::Scaling() {
   labelKey->setText("Gamma");
 
@@ -73,6 +22,7 @@ Scaling::Scaling() {
   sboxX0 = new QSpinBox();
   sboxX0->setAlignment(Qt::AlignCenter);
   sboxX0->setMaximum(INT_MAX);
+  sboxX0->setMinimumWidth(50);
 
   labelM = new QLabel("M:");
   labelM->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -80,6 +30,7 @@ Scaling::Scaling() {
   sboxM->setAlignment(Qt::AlignCenter);
   sboxM->setMaximum(INT_MAX);
   sboxM->setMinimum(INT_MIN);
+  sboxM->setMinimumWidth(50);
 
   labelC = new QLabel("C:");
   labelC->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -87,6 +38,7 @@ Scaling::Scaling() {
   sboxC->setAlignment(Qt::AlignCenter);
   sboxC->setMaximum(INT_MAX);
   sboxC->setMinimum(INT_MIN);
+  sboxC->setMinimumWidth(50);
 
   labelA = new QLabel("A:");
   labelA->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -94,6 +46,7 @@ Scaling::Scaling() {
   sboxA->setAlignment(Qt::AlignCenter);
   sboxA->setMaximum(INT_MAX);
   sboxA->setMinimum(INT_MIN);
+  sboxA->setMinimumWidth(50);
 
   pbuttonGen = new QPushButton("generate");
 
@@ -128,7 +81,7 @@ void Scaling::teditInChanged() {
   bool is_decrypt = false;
   if (cboxOperation->currentIndex())
     is_decrypt = true;
-  if (scaling(text, teditKey->toPlainText(), is_decrypt))
+  if (gronsfeld(text, teditKey->toPlainText(), is_decrypt))
     teditOut->setText("Incorrect key!");
   else
     teditOut->setText(text);
@@ -136,7 +89,7 @@ void Scaling::teditInChanged() {
 
 void Scaling::pbuttonGenClicked() {
   QList<int> gamma;
-  gen(gamma, sboxM->value(), sboxA->value(), sboxC->value(), sboxX0->value());
+  genGamma(gamma, sboxM->value(), sboxA->value(), sboxC->value(), sboxX0->value());
   QString key;
   for (int i = 0; i < gamma.length(); ++i) {
     key.push_back(QString::number(gamma[i]));

@@ -19,6 +19,7 @@ BarChart::BarChart() {
   bseries->attachAxis(axisX); 
 
   chartView = new QChartView(chart);
+  chartView->setBaseSize(1000, 700);
   scroll = new QScrollArea();
   scroll->setWidget(chartView);
   scroll->setWidgetResizable(true);
@@ -36,17 +37,19 @@ BarChart::~BarChart() {
   delete glayout;
 }
 
-void BarChart::draw(QMap<QChar, qsizetype>& symbols) {
+void BarChart::drawBarCharts(QList<QPair<QChar, qsizetype>>& symbolAmount) {
     bseries->clear();
     QBarSet* letters = new QBarSet("");
     QStringList categories;
     qsizetype max = 0;
-    for (QMap<QChar, qsizetype>::iterator it = symbols.begin();
-         it != symbols.end(); ++it) {
-      if (it.value() > max)
-        max = it.value();
-      *letters << it.value();
-      categories << it.key();
+    for (QPair<QChar, qsizetype> it : symbolAmount) {
+      if (it.second > max)
+        max = it.second;
+      *letters << it.second;
+      if (it.first == ' ')
+        categories << "_";
+      else
+        categories << it.first;
     }
     bseries->append(letters);
     axisX->setCategories(categories);

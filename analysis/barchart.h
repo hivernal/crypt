@@ -8,17 +8,17 @@
 
 class BarChart : public QWidget {
   QBarSeries* bseries;
-  QChart* chart;
   QValueAxis* axisY;
-  QChartView* chartView;
   QBarCategoryAxis* axisX;
+  QChart* chart;
+  QChartView* chartView;
   QScrollArea* scroll;
   QGridLayout* glayout;
 
 public:
   BarChart();
   ~BarChart();
-  void draw(QMap<QChar, qsizetype>& symbols);
+  void drawBarCharts(QList<QPair<QChar, qsizetype>>& symbolAmount);
 };
 
 #endif
