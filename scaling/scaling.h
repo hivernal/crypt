@@ -6,13 +6,11 @@
 #include <QSpinBox>
 #include <QHBoxLayout>
 #include <QLineEdit>
-#include <QProgressBar>
 #include <QFile>
 
 class Scaling : public Richelieu {
   QLabel* labelOptions;
   QHBoxLayout* hlayoutOptions;
-
   QLabel* labelX0;
   QSpinBox* sboxX0;
   QLabel* labelM;
@@ -30,7 +28,6 @@ class Scaling : public Richelieu {
   QLabel* labelFileOut;
   QLineEdit* leditFileOut;
   QPushButton* pbuttonFileOut;
-  QProgressBar* progBarFiles;
   QPushButton* pbuttonRun;
 
   int openFile(QFile& file, QString fileName, QIODeviceBase::OpenMode mode);

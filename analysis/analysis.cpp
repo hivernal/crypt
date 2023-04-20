@@ -90,7 +90,7 @@ Analysis::Analysis() {
 
   labelFile = new QLabel("File ");
   leditFile = new QLineEdit();
-  pbuttonFile = new QPushButton("open");
+  pbuttonFile = new QPushButton("Open");
   glayout->addWidget(labelFile, 0, 0);
   glayout->addWidget(leditFile, 0, 1);
   glayout->addWidget(pbuttonFile, 0, 2);

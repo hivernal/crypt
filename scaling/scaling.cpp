@@ -3,6 +3,7 @@
 #include <QList>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QProgressDialog>
 
 int gronsfeld(QString& text, QString key, bool is_decrypt);
 
@@ -20,13 +21,11 @@ Scaling::Scaling() {
   labelFileIn = new QLabel("Input file");
   leditFileIn = new QLineEdit();
   glayoutFiles = new QGridLayout();
-  pbuttonFileIn = new QPushButton("open");
+  pbuttonFileIn = new QPushButton("Open");
   labelFileOut = new QLabel("Output file");
   leditFileOut = new QLineEdit();
-  pbuttonFileOut = new QPushButton("open");
-  progBarFiles = new QProgressBar();
-  progBarFiles->hide();
-  pbuttonRun = new QPushButton("run");
+  pbuttonFileOut = new QPushButton("Open");
+  pbuttonRun = new QPushButton("Run");
 
   glayoutFiles->addWidget(labelFileIn, 0, 0);
   glayoutFiles->addWidget(leditFileIn, 0, 1);
@@ -34,8 +33,7 @@ Scaling::Scaling() {
   glayoutFiles->addWidget(labelFileOut, 1, 0);
   glayoutFiles->addWidget(leditFileOut, 1, 1);
   glayoutFiles->addWidget(pbuttonFileOut, 1, 2);
-  glayoutFiles->addWidget(progBarFiles, 2, 1, 1, 2);
-  glayoutFiles->addWidget(pbuttonRun, 3, 2);
+  glayoutFiles->addWidget(pbuttonRun, 2, 2);
 
   labelOptions = new QLabel("Options");
   labelX0 = new QLabel("X0:");
@@ -68,7 +66,7 @@ Scaling::Scaling() {
   sboxA->setMaximum(INT_MAX);
   sboxA->setMinimum(INT_MIN);
   sboxA->setMinimumWidth(50);
-  pbuttonGen = new QPushButton("generate");
+  pbuttonGen = new QPushButton("Generate");
 
   hlayoutOptions = new QHBoxLayout();
   hlayoutOptions->addWidget(labelX0);
@@ -107,7 +105,7 @@ void Scaling::teditInChanged() {
   QString text = teditIn->toPlainText();
   bool isDecrypt = cboxOperation->currentIndex();
   if (gronsfeld(text, teditKey->toPlainText(), isDecrypt))
-    teditOut->setText("Incorrect key!");
+    teditOut->setText("Incorrect gamma!");
   else
     teditOut->setText(text);
 }
@@ -144,9 +142,7 @@ void Scaling::pbuttonRunClicked() {
     return;
   }
 
-  progBarFiles->show();
   scaling(text);
-  progBarFiles->hide();
   fileOut.write(text);
   fileOut.close();
 }
@@ -156,6 +152,8 @@ int Scaling::openFile(QFile& file, QString fileName,
   if (fileName.isEmpty() || fileName[0] == ' ' || fileName.last(1) == ' ')
     return EXIT_FAILURE;
   file.setFileName(fileName);
+  if (file.isOpen())
+    return EXIT_FAILURE;
   if (!file.open(mode))
     return EXIT_FAILURE;
   return EXIT_SUCCESS;
@@ -180,14 +178,19 @@ void Scaling::scaling(QByteArray& text) {
   bool isDecrypt = cboxOperation->currentIndex();
   QString gamma = teditKey->toPlainText();
   QStringList steps = gamma.split(',', Qt::SkipEmptyParts);
+  QProgressDialog progress("Encryption...", "cancel", 0, 100, this);
+  progress.setModal(true);
   for (qsizetype i = 0, j = 0; i < text.length(); ++i, ++j) {
-    progBarFiles->setValue(i * 100 / text.length());
+    progress.setValue(i * 100 / text.length());
+    if (progress.wasCanceled())
+      break;
     j = j % steps.length();
     int step = steps[j].toInt();
     if (isDecrypt)
       step = ~step + 1;
     text[i] = text[i] + step % 256;
   }
+  progress.setValue(100);
 }
 
 
@@ -231,7 +234,6 @@ Scaling::~Scaling() {
   delete labelFileOut;
   delete leditFileOut;
   delete pbuttonFileOut;
-  delete progBarFiles;
   delete pbuttonRun;
   delete glayoutFiles;
 }
