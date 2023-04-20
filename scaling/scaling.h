@@ -5,24 +5,37 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <QHBoxLayout>
+#include <QLineEdit>
+#include <QProgressBar>
+#include <QFile>
 
 class Scaling : public Richelieu {
   QLabel* labelOptions;
   QHBoxLayout* hlayoutOptions;
 
-  QSpinBox* sboxX0;
   QLabel* labelX0;
-
-  QSpinBox* sboxM;
+  QSpinBox* sboxX0;
   QLabel* labelM;
-
-  QSpinBox* sboxC;
+  QSpinBox* sboxM;
   QLabel* labelC;
-
-  QSpinBox* sboxA;
+  QSpinBox* sboxC;
   QLabel* labelA;
-
+  QSpinBox* sboxA;
   QPushButton* pbuttonGen;
+
+  QGridLayout* glayoutFiles;
+  QLabel* labelFileIn;
+  QLineEdit* leditFileIn;
+  QPushButton* pbuttonFileIn;
+  QLabel* labelFileOut;
+  QLineEdit* leditFileOut;
+  QPushButton* pbuttonFileOut;
+  QProgressBar* progBarFiles;
+  QPushButton* pbuttonRun;
+
+  int openFile(QFile& file, QString fileName, QIODeviceBase::OpenMode mode);
+  void scaling(QByteArray& text);
+  int checkGamma();
 
 public:
   Scaling();
@@ -30,6 +43,9 @@ public:
 private slots:
   void teditInChanged();
   void pbuttonGenClicked();
+  void pbuttonFileInClicked();
+  void pbuttonFileOutClicked();
+  void pbuttonRunClicked();
 };
 
 #endif

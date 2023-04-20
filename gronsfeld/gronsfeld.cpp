@@ -8,7 +8,7 @@ int gronsfeld(QString& text, QString key, bool is_decrypt) {
 
   int step;
   bool to_int_is_ok;
-  for (size_t i = 0, j = 0; i < text.length(); ++i) {
+  for (qsizetype i = 0, j = 0; i < text.length(); ++i) {
     if (j == steps.length())
       j = 0;
 
