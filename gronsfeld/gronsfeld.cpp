@@ -1,21 +1,21 @@
 #include "gronsfeld.h"
 #include "macros.h"
 
-int gronsfeld(QString& text, QString key, bool is_decrypt) {
+int gronsfeld(QString& text, QString key, bool isDecrypt) {
   QStringList steps = key.split(',', Qt::SkipEmptyParts);
   if (!steps.length())
     return EXIT_FAILURE;
 
   int step;
-  bool to_int_is_ok;
+  bool toIntIsOk;
   for (qsizetype i = 0, j = 0; i < text.length(); ++i) {
     if (j == steps.length())
       j = 0;
 
-    step = steps[j].toInt(&to_int_is_ok);
-    if (!to_int_is_ok)
+    step = steps[j].toInt(&toIntIsOk);
+    if (!toIntIsOk)
       return EXIT_FAILURE;
-    if (is_decrypt)
+    if (isDecrypt)
       step = ~step + 1;
 
     if (IS_UP_EN(text[i])) {
@@ -64,10 +64,8 @@ Gronsfeld::Gronsfeld() {
 
 void Gronsfeld::teditInChanged() {
   QString text = teditIn->toPlainText();
-  bool is_decrypt = false;
-  if (cboxOperation->currentIndex())
-    is_decrypt = true;
-  if (gronsfeld(text, teditKey->toPlainText(), is_decrypt))
+  bool isDecrypt = cboxOperation->currentIndex();
+  if (gronsfeld(text, teditKey->toPlainText(), isDecrypt))
     teditOut->setText("Incorrect key!");
   else
     teditOut->setText(text);

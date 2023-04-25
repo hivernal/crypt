@@ -34,8 +34,8 @@ set(PROJECT_SOURCES
     playfair/playfair.h
     analysis/analysis.cpp
     analysis/analysis.h
-    analysis/barchart.cpp
-    analysis/barchart.h
+    analysis/barcharts.cpp
+    analysis/barcharts.h
     scaling/scaling.cpp
     scaling/scaling.h
     )

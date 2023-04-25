@@ -1,6 +1,6 @@
-#include "barchart.h"
+#include "barcharts.h"
 
-BarChart::BarChart() {
+BarCharts::BarCharts() {
   bseries = new QBarSeries();
   chart = new QChart();
   chart->setTitle("Cryptoanalysis");
@@ -27,7 +27,7 @@ BarChart::BarChart() {
   glayout->addWidget(scroll);
 }
 
-BarChart::~BarChart() {
+BarCharts::~BarCharts() {
   delete bseries;
   delete axisY;
   delete axisX;
@@ -37,7 +37,7 @@ BarChart::~BarChart() {
   delete glayout;
 }
 
-void BarChart::drawBarCharts(QList<QPair<QChar, qsizetype>>& symbolAmount) {
+void BarCharts::drawBarCharts(QList<QPair<QChar, qsizetype>>& symbolAmount) {
     bseries->clear();
     QBarSet* letters = new QBarSet("");
     QStringList categories;

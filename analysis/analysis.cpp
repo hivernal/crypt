@@ -26,63 +26,6 @@ bool compareSymbols(QPair<QChar, qsizetype>& s1, QPair<QChar, qsizetype>& s2) {
   return s1.second > s2.second;
 }
 
-int analysis(QString& text, QList<QPair<QChar, qsizetype>>& symbolAmount,
-             QString& alphabetBefore, QString& alphabetAfter) {
-  qsizetype amount = 0;
-  bool isRu = false;
-  bool isEn = false;
-  for (qsizetype i = 0; i < text.length(); ++i) {
-    bool wasLow = false;
-    if (text[i] == '\n')
-      continue;
-    if (text[i].isLower()) {
-      wasLow = true;
-      text[i] = text[i].toUpper();
-    }
-    if (IS_UP_EN(text[i])) {
-      isEn = true;
-      addSymbol(symbolAmount, text[i]);
-    }
-    else if (IS_UP_RU(text[i]) || text[i] == ' ' && isRu) {
-      isRu = true;
-      addSymbol(symbolAmount, text[i]);
-    }
-    ++amount;
-    if (wasLow)
-      text[i] = text[i].toLower();
-  }
-  if (isRu && isEn)
-    return EXIT_FAILURE;
-
-  if (isRu) alphabetAfter = alphabetRu;
-  else alphabetAfter = alphabetEn;
-  std::sort(symbolAmount.begin(), symbolAmount.end(), compareSymbols);
-
-  QTextStream out(stdout);
-  out << Qt::endl;
-  alphabetBefore.clear();
-  for (QPair<QChar, qsizetype> it : symbolAmount) {
-    out << it.first << " -> " << (float) it.second / amount << Qt::endl;
-    alphabetBefore.push_back(it.first);
-  }
-
-  for (qsizetype i = 0; i < text.length(); ++i) {
-    bool wasLow = false;
-    if (text[i].isLower()) {
-      wasLow = true;
-      text[i] = text[i].toUpper();
-    }
-    if (IS_UP_EN(text[i])) {
-      text[i] = alphabetEn[indexOfSymbol(symbolAmount, text[i])];
-    } else if (IS_UP_RU(text[i]) || text[i] == ' ' && isRu) {
-      text[i] = alphabetRu[indexOfSymbol(symbolAmount, text[i])];
-    }
-    if (wasLow)
-      text[i] = text[i].toLower();
-  }
-  return EXIT_SUCCESS;
-}
-
 
 Analysis::Analysis() {
   widget = new QWidget();
@@ -112,7 +55,6 @@ Analysis::Analysis() {
   tableWidgetReplacements->setColumnCount(32);
   tableWidgetReplacements->setRowHeight(0, 50);
   tableWidgetReplacements->setRowHeight(1, 50);
-  tableWidgetReplacements->setMaximumHeight(144);
   tableWidgetReplacements->setVerticalHeaderLabels({"Before", "After"});
   glayout->addWidget(labelReplacements, 3, 0);
   glayout->addWidget(tableWidgetReplacements, 3,  1, 1, 2);
@@ -124,7 +66,7 @@ Analysis::Analysis() {
   glayout->addWidget(labelFrom, 4, 0);
   glayout->addWidget(cboxFrom, 4,  1, 1, 2);
 
-  barchart = new BarChart();
+  barcharts = new BarCharts();
 
   connect(pbuttonFile, &QPushButton::clicked, this,
           &Analysis::pbuttonFileClicked);
@@ -148,7 +90,7 @@ void Analysis::leditFileChanged() {
     return;
   QString text = teditIn->toPlainText();
   QList<QPair<QChar, qsizetype>> symbolAmount;
-  if (analysis(text, symbolAmount, alphabetBefore, alphabetAfter)) {
+  if (analysis(text, symbolAmount)) {
     teditOut->setText("Incorrect input!");
     return;
   }
@@ -162,7 +104,7 @@ void Analysis::teditTextChanged() {
   if (!cboxFrom->currentIndex() || text.isEmpty())
     return;
   QList<QPair<QChar, qsizetype>> symbolAmount;
-  if (analysis(text, symbolAmount, alphabetBefore, alphabetAfter)) {
+  if (analysis(text, symbolAmount)) {
     teditOut->setText("Incorrect input!");
     return;
   }
@@ -222,6 +164,61 @@ int Analysis::readFile(QString fileName) {
   return EXIT_SUCCESS;
 }
 
+int Analysis::analysis(QString& text, QList<QPair<QChar, qsizetype>>& symbolAmount) {
+  qsizetype amount = 0;
+  int alphabet = 0;
+  for (qsizetype i = 0; i < text.length(); ++i) {
+    bool wasLow = false;
+    if (text[i] == '\n')
+      continue;
+    if (text[i].isLower()) {
+      wasLow = true;
+      text[i] = text[i].toUpper();
+    }
+    if (IS_UP_EN(text[i])) {
+      alphabet |= En;
+      addSymbol(symbolAmount, text[i]);
+    }
+    else if (IS_UP_RU(text[i]) || text[i] == ' ' && alphabet & Ru) {
+      alphabet |= Ru;
+      addSymbol(symbolAmount, text[i]);
+    }
+    ++amount;
+    if (wasLow)
+      text[i] = text[i].toLower();
+  }
+  if (alphabet & Ru && alphabet & En)
+    return EXIT_FAILURE;
+
+  if (alphabet & Ru) alphabetAfter = alphabetRu;
+  else alphabetAfter = alphabetEn;
+  std::sort(symbolAmount.begin(), symbolAmount.end(), compareSymbols);
+
+  QTextStream out(stdout);
+  out << Qt::endl;
+  alphabetBefore.clear();
+  for (QPair<QChar, qsizetype> it : symbolAmount) {
+    out << it.first << " -> " << (float) it.second / amount << Qt::endl;
+    alphabetBefore.push_back(it.first);
+  }
+
+  for (qsizetype i = 0; i < text.length(); ++i) {
+    bool wasLow = false;
+    if (text[i].isLower()) {
+      wasLow = true;
+      text[i] = text[i].toUpper();
+    }
+    if (IS_UP_EN(text[i])) {
+      text[i] = alphabetEn[indexOfSymbol(symbolAmount, text[i])];
+    } else if (IS_UP_RU(text[i]) || text[i] == ' ' && alphabet & Ru) {
+      text[i] = alphabetRu[indexOfSymbol(symbolAmount, text[i])];
+    }
+    if (wasLow)
+      text[i] = text[i].toLower();
+  }
+  return EXIT_SUCCESS;
+}
+
 void Analysis::fillTable() {
   disconnect(tableWidgetReplacements, &QTableWidget::cellChanged, this,
              &Analysis::tableCellChanged);
@@ -249,10 +246,10 @@ void Analysis::fillTable() {
 }
 
 void Analysis::drawBarCharts(QList<QPair<QChar, qsizetype>>& symbolAmount) {
-  if (!barchart->isVisible()) {
-    barchart->show();
+  if (!barcharts->isVisible()) {
+    barcharts->show();
   }
-  barchart->drawBarCharts(symbolAmount);
+  barcharts->drawBarCharts(symbolAmount);
 }
 
 QWidget* Analysis::getWidget() {
@@ -260,7 +257,7 @@ QWidget* Analysis::getWidget() {
 }
 
 Analysis::~Analysis() {
-  delete barchart;
+  delete barcharts;
   delete labelFile;
   delete leditFile;
   delete pbuttonFile;

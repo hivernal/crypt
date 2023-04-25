@@ -5,7 +5,7 @@
 
 QString alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя12345";
 
-int playfair(QString& text, QString key, bool is_decrypt) {
+int playfair(QString& text, QString key, bool isDecrypt) {
   if (!key.length())
     return EXIT_FAILURE;
 
@@ -54,7 +54,7 @@ int playfair(QString& text, QString key, bool is_decrypt) {
       if (matrix[i2][j2] == text[j]) break;
     }
     if (i1 == i2) {
-      if (is_decrypt) {
+      if (isDecrypt) {
         text[i] = matrix[i1][(j1 - 1 + NCOLUMNS) % NCOLUMNS];
         text[j] = matrix[i2][(j2 - 1 + NCOLUMNS) % NCOLUMNS];
       } else {
@@ -62,7 +62,7 @@ int playfair(QString& text, QString key, bool is_decrypt) {
         text[j] = matrix[i2][(j2 + 1) % NCOLUMNS];
       }
     } else if (j1 == j2) {
-      if (is_decrypt) {
+      if (isDecrypt) {
         text[i] = matrix[(i1 - 1 + NROWS) % NROWS][j1];
         text[j] = matrix[(i2 - 1 + NROWS) % NROWS][j2];
       } else {
@@ -97,10 +97,8 @@ Playfair::Playfair() {
 
 void Playfair::teditInChanged() {
   QString text = teditIn->toPlainText();
-  bool is_decrypt = false;
-  if (cboxOperation->currentIndex())
-    is_decrypt = true;
-  if (playfair(text, teditKey->toPlainText(), is_decrypt))
+  bool isDecrypt = cboxOperation->currentIndex();
+  if (playfair(text, teditKey->toPlainText(), isDecrypt))
     teditOut->setText("Incorrect key!");
   else
     teditOut->setText(text);

@@ -8,7 +8,7 @@
 #include <QPushButton>
 #include <QTableWidget>
 
-#include "barchart.h"
+#include "barcharts.h"
 
 class Analysis : public QWidget {
   QWidget* widget;
@@ -24,9 +24,10 @@ class Analysis : public QWidget {
   QComboBox* cboxFrom;
   QLabel* labelReplacements;
   QTableWidget* tableWidgetReplacements;
-  BarChart* barchart;
+  BarCharts* barcharts;
   QString alphabetBefore;
   QString alphabetAfter;
+  enum {Ru = 1, En};
 
   int readFile(QString fileName);
   void fillTable();
@@ -42,6 +43,7 @@ private slots:
   void leditFileChanged();
   void teditTextChanged();
   void tableCellChanged(int row, int column);
+  int analysis(QString& text, QList<QPair<QChar, qsizetype>>& symbolAmount);
 };
 
 #endif

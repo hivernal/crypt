@@ -6,7 +6,7 @@
 #include <QScrollArea>
 #include <QGridLayout>
 
-class BarChart : public QWidget {
+class BarCharts : public QWidget {
   QBarSeries* bseries;
   QValueAxis* axisY;
   QBarCategoryAxis* axisX;
@@ -16,8 +16,8 @@ class BarChart : public QWidget {
   QGridLayout* glayout;
 
 public:
-  BarChart();
-  ~BarChart();
+  BarCharts();
+  ~BarCharts();
   void drawBarCharts(QList<QPair<QChar, qsizetype>>& symbolAmount);
 };
 

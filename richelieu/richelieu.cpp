@@ -1,22 +1,22 @@
 #include "richelieu.h"
 
-int richelieu(QString& text, QString key, bool is_decrypt) {
-  qsizetype i = 0, j = 0, key_size = 0;
+int richelieu(QString& text, QString key, bool isDecrypt) {
+  qsizetype i = 0, j = 0, keyLength = 0;
   QStringList blocks = key.split(' ', Qt::SkipEmptyParts);
   QStringList* numbers = new QStringList[blocks.length()];
   for (i = 0; i < blocks.length(); ++i) {
     numbers[i] = blocks[i].split(',', Qt::SkipEmptyParts);
-    key_size += numbers[i].length();
+    keyLength += numbers[i].length();
   }
 
-  if (!key_size)
+  if (!keyLength)
     return EXIT_FAILURE;
   unsigned sum = 0;
   for (i = 0; i < blocks.length(); ++i) {
     for (j = 0; j < numbers[i].length(); ++j) {
-      bool to_int_is_ok;
-      unsigned number = numbers[i][j].toUInt(&to_int_is_ok);
-      if (number > numbers[i].length() || !to_int_is_ok ||
+      bool toIntIsOk;
+      unsigned number = numbers[i][j].toUInt(&toIntIsOk);
+      if (number > numbers[i].length() || !toIntIsOk ||
           !number || number > text.length())
         return EXIT_FAILURE;
       for (qsizetype k = j + 1; k < numbers[i].length(); ++k) {
@@ -30,19 +30,19 @@ int richelieu(QString& text, QString key, bool is_decrypt) {
     return EXIT_FAILURE;
 
   QString result = text;
-  int block_offset;
-  if (is_decrypt) {
+  int blockOffset;
+  if (isDecrypt) {
     for (i = 0, j = 0; i < blocks.length(); ++i) {
-      for (block_offset = j; j < numbers[i].length() + block_offset; ++j) {
-        result[j] = text[numbers[i][j - block_offset].toUInt()
-                         - 1 + block_offset];
+      for (blockOffset = j; j < numbers[i].length() + blockOffset; ++j) {
+        result[j] = text[numbers[i][j - blockOffset].toUInt()
+                         - 1 + blockOffset];
       }
     }
   } else {
     for (i = 0, j = 0; i < blocks.length(); ++i) {
-      for (block_offset = j; j < numbers[i].length() + block_offset; ++j) {
-        result[numbers[i][j - block_offset].toUInt() 
-               - 1 + block_offset] = text[j];
+      for (blockOffset = j; j < numbers[i].length() + blockOffset; ++j) {
+        result[numbers[i][j - blockOffset].toUInt() 
+               - 1 + blockOffset] = text[j];
       }
     }
   }
@@ -72,10 +72,8 @@ Richelieu::Richelieu() {
 
 void Richelieu::teditInChanged() {
   QString text = teditIn->toPlainText();
-  bool is_decrypt = false;
-  if (cboxOperation->currentIndex())
-    is_decrypt = true;
-  if (richelieu(text, teditKey->toPlainText(), is_decrypt))
+  bool isDecrypt = cboxOperation->currentIndex();
+  if (richelieu(text, teditKey->toPlainText(), isDecrypt))
     teditOut->setText("Incorrect key!");
   else
     teditOut->setText(text);

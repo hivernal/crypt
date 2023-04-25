@@ -1,8 +1,13 @@
 #include "atbash.h"
 #include "macros.h"
 
+#define UP_EN 155
+#define LOW_EN 219
+#define UP_RU 2111
+#define LOW_RU 2175
+
 QString atbash(QString text) {
-  for (int i = 0; i < text.size(); ++i) {
+  for (qsizetype i = 0; i < text.size(); ++i) {
     if (IS_UP_EN(text[i]))
       text[i] = (QChar)(UP_EN - text[i].unicode());
     else if (IS_LOW_EN(text[i]))

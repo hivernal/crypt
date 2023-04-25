@@ -31,6 +31,7 @@ class Scaling : public Richelieu {
   QPushButton* pbuttonRun;
 
   int openFile(QFile& file, QString fileName, QIODeviceBase::OpenMode mode);
+  void genGamma(qsizetype length);
   void scaling(QByteArray& text);
   int checkGamma();
 

@@ -1,11 +1,11 @@
 #include "caesar.h"
 #include "macros.h"
 
-QString caesar(QString text, int step, bool is_decrypt) {
-  if (is_decrypt)
+QString caesar(QString text, int step, bool isDecrypt) {
+  if (isDecrypt)
     step = ~step + 1;
 
-  for (int i = 0; i < text.length(); i++) {
+  for (qsizetype i = 0; i < text.length(); i++) {
     if (IS_UP_EN(text[i])) {
       text[i] = (QChar)(text[i].unicode() + step % EN);
       if (text[i] > u'Z')
@@ -60,10 +60,8 @@ Caesar::Caesar() {
 void Caesar::teditChanged() {
   int step = sboxStep->value();
   QString qstr = teditIn->toPlainText();
-  bool is_decrypt = false;
-  if (cboxOperation->currentIndex())
-    is_decrypt = true;
-  teditOut->setText(caesar(qstr, step, is_decrypt));
+  bool isDecrypt = cboxOperation->currentIndex();
+  teditOut->setText(caesar(qstr, step, isDecrypt));
 }
 
 Caesar::~Caesar() {

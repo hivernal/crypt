@@ -5,15 +5,7 @@
 #include <QMessageBox>
 #include <QProgressDialog>
 
-int gronsfeld(QString& text, QString key, bool is_decrypt);
-
-void genGamma(QList<int>& gamma, int m, int a, int c, int x0) {
-  gamma.push_back(x0);
-  for (int i = 1; i < m; ++i) {
-    x0 = (x0 * a + c) % m;
-    gamma.push_back(x0);
-  }
-}
+int gronsfeld(QString& text, QString key, bool isDecrypt);
 
 Scaling::Scaling() {
   labelKey->setText("Gamma");
@@ -41,15 +33,14 @@ Scaling::Scaling() {
   sboxX0 = new QSpinBox();
   sboxX0->setAlignment(Qt::AlignCenter);
   sboxX0->setMaximum(INT_MAX);
-  sboxX0->setMinimumWidth(50);
+  sboxX0->setMinimum(INT_MIN);
 
   labelM = new QLabel("M:");
   labelM->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   sboxM = new QSpinBox();
   sboxM->setAlignment(Qt::AlignCenter);
   sboxM->setMaximum(INT_MAX);
-  sboxM->setMinimum(INT_MIN);
-  sboxM->setMinimumWidth(50);
+  sboxM->setMinimum(1);
 
   labelC = new QLabel("C:");
   labelC->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -57,7 +48,6 @@ Scaling::Scaling() {
   sboxC->setAlignment(Qt::AlignCenter);
   sboxC->setMaximum(INT_MAX);
   sboxC->setMinimum(INT_MIN);
-  sboxC->setMinimumWidth(50);
 
   labelA = new QLabel("A:");
   labelA->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -65,7 +55,6 @@ Scaling::Scaling() {
   sboxA->setAlignment(Qt::AlignCenter);
   sboxA->setMaximum(INT_MAX);
   sboxA->setMinimum(INT_MIN);
-  sboxA->setMinimumWidth(50);
   pbuttonGen = new QPushButton("Generate");
 
   hlayoutOptions = new QHBoxLayout();
@@ -159,7 +148,6 @@ int Scaling::openFile(QFile& file, QString fileName,
   return EXIT_SUCCESS;
 }
 
-
 int Scaling::checkGamma() {
   QString gamma = teditKey->toPlainText();
   if (gamma.isEmpty())
@@ -193,28 +181,47 @@ void Scaling::scaling(QByteArray& text) {
   progress.setValue(100);
 }
 
-
 void Scaling::pbuttonGenClicked() {
-  QList<int> gamma;
-  int m = sboxM->value();
-  if (!m) {
-    QMessageBox::critical(this, "M", "M parametr is 0");
-    return;
+  qsizetype length;
+  QFile fileIn;
+  if (openFile(fileIn, leditFileIn->text(), QIODevice::ReadOnly |
+               QIODeviceBase::ExistingOnly)) {
+    if (teditIn->toPlainText().isEmpty()) {
+      QMessageBox::critical(this, "Message", "error to read file and text");
+      return;
+    }
+    length = teditIn->toPlainText().length();
+  } else  {
+    length = fileIn.size();
+    fileIn.close();
   }
+
+  int m = sboxM->value();
+  if (length < m)
+    genGamma(length);
+  else
+    genGamma(m);
+}
+
+void Scaling::genGamma(qsizetype length) {
+  int m = sboxM->value();
   int a = sboxA->value() % m;
   int c = sboxC->value() % m;
   int x0 = sboxX0->value() % m;
-  genGamma(gamma, m, a, c, x0);
-  if (gamma.isEmpty())
-    return;
+  if (length > 1000)
+    length = 1000;
   QString key;
-  for (int i = 0; i < gamma.length(); ++i) {
-    key.push_back(QString::number(gamma[i]));
+  key.push_back(QString::number(x0));
+  key.push_back(',');
+  for (qsizetype i = 1; i < length; ++i) {
+    x0 = (x0 * a + c) % m;
+    key.push_back(QString::number(x0));
     key.push_back(',');
   }
   key.removeLast();
   teditKey->setText(key);
 }
+
 
 Scaling::~Scaling() {
   delete labelOptions;
