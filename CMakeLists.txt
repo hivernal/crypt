@@ -38,6 +38,8 @@ set(PROJECT_SOURCES
     analysis/barcharts.h
     scaling/scaling.cpp
     scaling/scaling.h
+    rsa/rsa.cpp
+    rsa/rsa.h
     )
 
 set(INCLUDE_DIRECTORIES
@@ -50,6 +52,7 @@ set(INCLUDE_DIRECTORIES
     playfair
     analysis
     scaling
+    rsa
     )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -75,7 +78,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(crypt PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt6::Charts)
+target_link_libraries(crypt PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt6::Charts gmp)
 target_include_directories(crypt PRIVATE ${INCLUDE_DIRECTORIES})
 
 set_target_properties(crypt PROPERTIES

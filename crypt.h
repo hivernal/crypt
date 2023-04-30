@@ -12,6 +12,7 @@
 #include "playfair.h"
 #include "analysis.h"
 #include "scaling.h"
+#include "rsa.h"
 
 class Crypt : public QWidget {
   Q_OBJECT
@@ -24,6 +25,7 @@ class Crypt : public QWidget {
   Playfair* playfair;
   Analysis* analysis;
   Scaling* scaling;
+  Rsa* rsa;
 
   QTabWidget* tab_widget;
   QGridLayout* glayout_main;
