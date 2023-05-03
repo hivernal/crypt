@@ -78,7 +78,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(crypt PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt6::Charts gmp)
+target_link_libraries(crypt PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt6::Charts gmpxx gmp)
 target_include_directories(crypt PRIVATE ${INCLUDE_DIRECTORIES})
 
 set_target_properties(crypt PROPERTIES

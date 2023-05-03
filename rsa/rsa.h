@@ -7,6 +7,9 @@
 #include <QTextEdit>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QSpinBox>
+#include <QComboBox>
+#include <gmpxx.h>
 #include <QFile>
 
 class Rsa : public QWidget {
@@ -22,21 +25,27 @@ class Rsa : public QWidget {
   QLabel* labelFileOut;
   QLineEdit* leditFileOut;
   QPushButton* pbuttonFileOut;
+  QLabel* labelKey;
+  QSpinBox* sboxKey;
   QPushButton* pbuttonGenKey;
-  QPushButton* pbuttonEncrypt;
-  QPushButton* pbuttonDecrypt;
-
-  int openFile(QFile& file, QString fileName, QIODeviceBase::OpenMode mode);
+  QLabel* labelOperation;
+  QComboBox* cboxOperation;
+  QPushButton* pbuttonRun;
 
 public:
   Rsa();
   ~Rsa();
   QWidget* getWidget();
+  int readKey(QString rsaFileName, mpz_class& eord, mpz_class& n);
+  void rsaFile(QByteArray& data, QFile& ouputFile, bool isDecrypt);
+  void rsaText(QString text, QString& result, bool isDecrypt);
 
 private slots:
   void pbuttonFileInClicked();
   void pbuttonFileOutClicked();
   void pbuttonGenKeyClicked();
+  void pbuttonRunClicked();
+  void teditTextInChanged();
 };
 
 #endif
