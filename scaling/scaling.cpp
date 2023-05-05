@@ -12,20 +12,11 @@ Scaling::Scaling() {
 
   labelFileIn = new QLabel("Input file");
   leditFileIn = new QLineEdit();
-  glayoutFiles = new QGridLayout();
   pbuttonFileIn = new QPushButton("Open");
   labelFileOut = new QLabel("Output file");
   leditFileOut = new QLineEdit();
   pbuttonFileOut = new QPushButton("Open");
   pbuttonRun = new QPushButton("Run");
-
-  glayoutFiles->addWidget(labelFileIn, 0, 0);
-  glayoutFiles->addWidget(leditFileIn, 0, 1);
-  glayoutFiles->addWidget(pbuttonFileIn, 0, 2);
-  glayoutFiles->addWidget(labelFileOut, 1, 0);
-  glayoutFiles->addWidget(leditFileOut, 1, 1);
-  glayoutFiles->addWidget(pbuttonFileOut, 1, 2);
-  glayoutFiles->addWidget(pbuttonRun, 2, 2);
 
   labelOptions = new QLabel("Options");
   labelX0 = new QLabel("X0:");
@@ -68,11 +59,20 @@ Scaling::Scaling() {
   hlayoutOptions->addWidget(sboxA);
   hlayoutOptions->addWidget(pbuttonGen);
 
-  glayout->addLayout(glayoutFiles, 3, 0, 1, 2);
-  glayout->addWidget(labelOptions, 4, 0);
-  glayout->addLayout(hlayoutOptions, 4, 1);
+  glayout->addWidget(teditIn, 0, 1, 1, 2);
+  glayout->addWidget(teditOut, 1, 1, 1, 2);
+  glayout->addWidget(teditKey, 2, 1, 1, 2);
+  glayout->addWidget(labelFileIn, 3, 0);
+  glayout->addWidget(leditFileIn, 3, 1);
+  glayout->addWidget(pbuttonFileIn, 3, 2);
+  glayout->addWidget(labelFileOut, 4, 0);
+  glayout->addWidget(leditFileOut, 4, 1);
+  glayout->addWidget(pbuttonFileOut, 4, 2);
   glayout->addWidget(labelOperation, 5, 0);
   glayout->addWidget(cboxOperation, 5, 1);
+  glayout->addWidget(pbuttonRun, 5, 2);
+  glayout->addWidget(labelOptions, 6, 0);
+  glayout->addLayout(hlayoutOptions, 6, 1, 1, 2);
 
   connect(teditIn, &QTextEdit::textChanged, this,
           &Scaling::teditInChanged);
@@ -242,5 +242,4 @@ Scaling::~Scaling() {
   delete leditFileOut;
   delete pbuttonFileOut;
   delete pbuttonRun;
-  delete glayoutFiles;
 }

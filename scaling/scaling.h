@@ -21,7 +21,6 @@ class Scaling : public Richelieu {
   QSpinBox* sboxA;
   QPushButton* pbuttonGen;
 
-  QGridLayout* glayoutFiles;
   QLabel* labelFileIn;
   QLineEdit* leditFileIn;
   QPushButton* pbuttonFileIn;

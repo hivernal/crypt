@@ -14,55 +14,57 @@ Rsa::Rsa() {
   labelTextIn = new QLabel("Original");
   teditTextIn = new QTextEdit();
   connect(teditTextIn, &QTextEdit::textChanged, this, &Rsa::teditTextInChanged);
-  glayout->addWidget(labelTextIn, 0, 0);
-  glayout->addWidget(teditTextIn, 0, 1, 1, 2);
-
   labelTextOut = new QLabel("Result");
   teditTextOut = new QTextEdit();
-  glayout->addWidget(labelTextOut, 1, 0);
-  glayout->addWidget(teditTextOut, 1, 1, 1, 2);
   
   labelFileIn = new QLabel("Input file");
   leditFileIn = new QLineEdit();
   pbuttonFileIn = new QPushButton("Open");
   connect(pbuttonFileIn, &QPushButton::clicked, this, &Rsa::pbuttonFileInClicked);
-  glayout->addWidget(labelFileIn, 2, 0);
-  glayout->addWidget(leditFileIn, 2, 1);
-  glayout->addWidget(pbuttonFileIn, 2, 2);
-
   labelFileOut = new QLabel("Output file");
   leditFileOut = new QLineEdit();
   pbuttonFileOut = new QPushButton("Open");
   connect(pbuttonFileOut, &QPushButton::clicked, this, &Rsa::pbuttonFileOutClicked);
-  glayout->addWidget(labelFileOut, 3, 0);
-  glayout->addWidget(leditFileOut, 3, 1);
-  glayout->addWidget(pbuttonFileOut, 3, 2);
 
   labelOperation = new QLabel("Operation");
   cboxOperation = new QComboBox();
   cboxOperation->addItem("Encrypt");
   cboxOperation->addItem("Decrypt");
   connect(cboxOperation, &QComboBox::currentIndexChanged, this, &Rsa::teditTextInChanged);
-  glayout->addWidget(labelOperation, 4, 0);
-  glayout->addWidget(cboxOperation, 4, 1, 1, 2);
+  pbuttonRun = new QPushButton("Run");
+  connect(pbuttonRun, &QPushButton::clicked, this, &Rsa::pbuttonRunClicked);
 
   labelKey = new QLabel("Key");
   sboxKey = new QSpinBox();
   sboxKey->setMinimum(4);
   sboxKey->setMaximum(2048);
   sboxKey->setValue(512);
-  sboxKey->setMaximumWidth(200);
+  sboxKey->setMinimumWidth(100);
   sboxKey->setAlignment(Qt::AlignCenter);
   connect(sboxKey, &QSpinBox::valueChanged, this, &Rsa::teditTextInChanged);
   pbuttonGenKey = new QPushButton("Generate");
   connect(pbuttonGenKey, &QPushButton::clicked, this, &Rsa::pbuttonGenKeyClicked);
-  glayout->addWidget(labelKey, 5, 0);
-  glayout->addWidget(sboxKey, 5, 1);
-  glayout->addWidget(pbuttonGenKey, 5, 2);
+  QHBoxLayout* hlayoutKey = new QHBoxLayout();
+  hlayoutKey->addWidget(sboxKey);
+  hlayoutKey->addWidget(pbuttonGenKey);
+  hlayoutKey->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding,
+                                            QSizePolicy::Fixed));
 
-  pbuttonRun = new QPushButton("Run");
-  connect(pbuttonRun, &QPushButton::clicked, this, &Rsa::pbuttonRunClicked);
-  glayout->addWidget(pbuttonRun, 6, 2);
+  glayout->addWidget(labelTextIn, 0, 0);
+  glayout->addWidget(teditTextIn, 0, 1, 1, 2);
+  glayout->addWidget(labelTextOut, 1, 0);
+  glayout->addWidget(teditTextOut, 1, 1, 1, 2);
+  glayout->addWidget(labelFileIn, 2, 0);
+  glayout->addWidget(leditFileIn, 2, 1);
+  glayout->addWidget(pbuttonFileIn, 2, 2);
+  glayout->addWidget(labelFileOut, 3, 0);
+  glayout->addWidget(leditFileOut, 3, 1);
+  glayout->addWidget(pbuttonFileOut, 3, 2);
+  glayout->addWidget(labelOperation, 4, 0);
+  glayout->addWidget(cboxOperation, 4, 1);
+  glayout->addWidget(pbuttonRun, 4, 2);
+  glayout->addWidget(labelKey, 5, 0);
+  glayout->addLayout(hlayoutKey, 5, 1);
 }
 
 void Rsa::pbuttonFileInClicked() {
@@ -263,6 +265,8 @@ Rsa::~Rsa() {
   delete labelFileOut;
   delete leditFileOut;
   delete pbuttonFileOut;
+  delete labelOperation;
+  delete cboxOperation;
   delete glayout;
   delete widget;
 }
