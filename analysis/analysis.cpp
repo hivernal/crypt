@@ -28,8 +28,7 @@ bool compareSymbols(QPair<QChar, qsizetype>& s1, QPair<QChar, qsizetype>& s2) {
 
 
 Analysis::Analysis() {
-  widget = new QWidget();
-  glayout = new QGridLayout(widget);
+  glayout = new QGridLayout(this);
 
   labelFile = new QLabel("File ");
   leditFile = new QLineEdit();
@@ -253,7 +252,7 @@ void Analysis::drawBarCharts(QList<QPair<QChar, qsizetype>>& symbolAmount) {
 }
 
 QWidget* Analysis::getWidget() {
-  return widget;
+  return this;
 }
 
 Analysis::~Analysis() {
@@ -270,5 +269,4 @@ Analysis::~Analysis() {
   delete labelReplacements;
   delete tableWidgetReplacements;
   delete glayout;
-  delete widget;
 }

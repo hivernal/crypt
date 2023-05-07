@@ -33,6 +33,9 @@ Crypt::Crypt(QWidget* parent) : QWidget(parent) {
   rsa = new Rsa();
   tab_widget->addTab(rsa->getWidget(), "Rsa");
 
+  hellman = new Hellman();
+  tab_widget->addTab(hellman->getWidget(), "Hellman");
+
   glayout_main = new QGridLayout(this);
   glayout_main->addWidget(tab_widget);
 }
@@ -47,6 +50,7 @@ Crypt::~Crypt() {
   delete analysis;
   delete scaling;
   delete rsa;
+  delete hellman;
 
   delete glayout_main;
   delete tab_widget;

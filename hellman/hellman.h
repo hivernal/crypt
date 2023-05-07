@@ -1,51 +1,58 @@
-#ifndef RSA_H
-#define RSA_H
+#ifndef HELLMAN_H
+#define HELLMAN_H
 
 #include <QWidget>
 #include <QGridLayout>
-#include <QLabel>
+#include <QHBoxLayout>
 #include <QTextEdit>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QSpinBox>
+#include <QLabel>
 #include <QComboBox>
+#include <QLineEdit>
+#include <QSpinBox>
+#include <QPushButton>
 #include <QFile>
 #include <gmpxx.h>
 
-class Rsa : public QWidget {
+class Hellman : public QWidget {
   QGridLayout* glayout;
+
   QLabel* labelTextIn;
   QTextEdit* teditTextIn;
   QLabel* labelTextOut;
   QTextEdit* teditTextOut;
+
   QLabel* labelFileIn;
   QLineEdit* leditFileIn;
   QPushButton* pbuttonFileIn;
   QLabel* labelFileOut;
   QLineEdit* leditFileOut;
   QPushButton* pbuttonFileOut;
-  QLabel* labelKey;
-  QSpinBox* sboxKey;
-  QPushButton* pbuttonGenKey;
-  QLabel* labelOperation;
-  QComboBox* cboxOperation;
+
   QPushButton* pbuttonRun;
 
-  int readKey(QString rsaFileName, mpz_class& eord, mpz_class& n);
-  void rsaFile(QByteArray& data, QFile& ouputFile, const mpz_class& eord, 
-               const mpz_class& n, bool isDecrypt);
-  void rsaText(QString text, QString& result, const mpz_class& eord, 
-               const mpz_class& n, bool isDecrypt);
+  QLabel* labelKey;
+  QHBoxLayout* hlayoutKey;
+  QLabel* labelKeySize;
+  QSpinBox* sboxKeySize;
+  QLabel* labelG;
+  QSpinBox* sboxG;
+  QLabel* labelP;
+  QSpinBox* sboxP;
+  QPushButton* pbuttonGenerate;
+
+  void hellmanFile(QByteArray& data, QFile& outputFile, int key);
+  void hellmanText(QString text, QString& result, int key);
+  int readKeyFile(mpz_class& aPrivate, mpz_class& k);
 
 public:
-  Rsa();
-  ~Rsa();
+  Hellman();
+  ~Hellman();
   QWidget* getWidget();
 
 private slots:
   void pbuttonFileInClicked();
   void pbuttonFileOutClicked();
-  void pbuttonGenKeyClicked();
+  void pbuttonGenerateClicked();
   void pbuttonRunClicked();
   void teditTextInChanged();
 };

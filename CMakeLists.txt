@@ -40,6 +40,8 @@ set(PROJECT_SOURCES
     scaling/scaling.h
     rsa/rsa.cpp
     rsa/rsa.h
+    hellman/hellman.cpp
+    hellman/hellman.h
     )
 
 set(INCLUDE_DIRECTORIES
@@ -53,6 +55,7 @@ set(INCLUDE_DIRECTORIES
     analysis
     scaling
     rsa
+    hellman
     )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

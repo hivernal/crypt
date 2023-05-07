@@ -25,6 +25,7 @@ Scaling::Scaling() {
   sboxX0->setAlignment(Qt::AlignCenter);
   sboxX0->setMaximum(INT_MAX);
   sboxX0->setMinimum(INT_MIN);
+  sboxX0->setMinimumWidth(50);
 
   labelM = new QLabel("M:");
   labelM->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -32,6 +33,7 @@ Scaling::Scaling() {
   sboxM->setAlignment(Qt::AlignCenter);
   sboxM->setMaximum(INT_MAX);
   sboxM->setMinimum(1);
+  sboxM->setMinimumWidth(50);
 
   labelC = new QLabel("C:");
   labelC->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -39,6 +41,7 @@ Scaling::Scaling() {
   sboxC->setAlignment(Qt::AlignCenter);
   sboxC->setMaximum(INT_MAX);
   sboxC->setMinimum(INT_MIN);
+  sboxC->setMinimumWidth(50);
 
   labelA = new QLabel("A:");
   labelA->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -46,6 +49,7 @@ Scaling::Scaling() {
   sboxA->setAlignment(Qt::AlignCenter);
   sboxA->setMaximum(INT_MAX);
   sboxA->setMinimum(INT_MIN);
+  sboxA->setMinimumWidth(50);
   pbuttonGen = new QPushButton("Generate");
 
   hlayoutOptions = new QHBoxLayout();
@@ -162,23 +166,25 @@ int Scaling::checkGamma() {
   return EXIT_SUCCESS;
 }
 
-void Scaling::scaling(QByteArray& text) {
+void Scaling::scaling(QByteArray& data) {
   bool isDecrypt = cboxOperation->currentIndex();
   QString gamma = teditKey->toPlainText();
   QStringList steps = gamma.split(',', Qt::SkipEmptyParts);
   QProgressDialog progress("Encryption...", "cancel", 0, 100, this);
   progress.setModal(true);
-  for (qsizetype i = 0, j = 0; i < text.length(); ++i, ++j) {
-    progress.setValue(i * 100 / text.length());
+  progress.setMinimumDuration(250);
+  for (qsizetype i = 0, j = 0; i < data.length(); ++i, ++j) {
+    progress.setValue(i * 100 / data.length());
     if (progress.wasCanceled())
       break;
     j = j % steps.length();
     int step = steps[j].toInt();
     if (isDecrypt)
       step = ~step + 1;
-    text[i] = text[i] + step % 256;
+    data[i] = data[i] + step % 256;
   }
   progress.setValue(100);
+  QMessageBox::information(this, "Encryption", "Encryption completed");
 }
 
 void Scaling::pbuttonGenClicked() {

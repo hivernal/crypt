@@ -11,7 +11,6 @@
 #include "barcharts.h"
 
 class Analysis : public QWidget {
-  QWidget* widget;
   QGridLayout* glayout;
   QLabel* labelFile;
   QLineEdit* leditFile;

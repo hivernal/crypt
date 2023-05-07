@@ -8,7 +8,6 @@
 
 class Atbash : public QWidget {
 protected:
-  QWidget* widget;
   QGridLayout* glayout;
   QTextEdit* teditIn;
   QTextEdit* teditOut;

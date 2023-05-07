@@ -21,8 +21,7 @@ QString atbash(QString text) {
 }
 
 Atbash::Atbash() {
-  widget = new QWidget();
-  glayout = new QGridLayout(widget);
+  glayout = new QGridLayout(this);
   labelIn = new QLabel("Original");
   teditIn = new QTextEdit();
   labelOut = new QLabel("Result");
@@ -45,9 +44,8 @@ Atbash::~Atbash() {
   delete teditOut;
   delete labelOut;
   delete glayout;
-  delete widget;
 }
 
 QWidget* Atbash::getWidget() {
-  return widget;
+  return this;
 }

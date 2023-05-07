@@ -1,4 +1,5 @@
 #include "rsa.h"
+
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QProgressDialog>
@@ -8,8 +9,7 @@
 #define RSA_PUBLIC_KEY "rsa.pub"
 
 Rsa::Rsa() {
-  widget = new QWidget();
-  glayout = new QGridLayout(widget);
+  glayout = new QGridLayout(this);
 
   labelTextIn = new QLabel("Original");
   teditTextIn = new QTextEdit();
@@ -116,6 +116,15 @@ void Rsa::pbuttonGenKeyClicked() {
 }
 
 void Rsa::pbuttonRunClicked() {
+  mpz_class eord;
+  mpz_class n;
+  QString rsaFileName = cboxOperation->currentIndex() ? RSA_PRIVATE_KEY : 
+                                                        RSA_PUBLIC_KEY;
+  if (readKey(rsaFileName, eord, n)) {
+    QMessageBox::critical(this, "Key", "Key was not generated");
+    return;
+  }
+
   QFile inputFile(leditFileIn->text());
   if (!inputFile.open(QIODevice::ReadOnly)) {
     QMessageBox::critical(this, "Input file", "Error to open input file");
@@ -137,13 +146,22 @@ void Rsa::pbuttonRunClicked() {
         return;
       }
     }
-    rsaFile(data, outputFile, true);
+    rsaFile(data, outputFile, eord, n, true);
   } else
-    rsaFile(data, outputFile, false);
+    rsaFile(data, outputFile, eord, n, false);
   outputFile.close();
 }
 
 void Rsa::teditTextInChanged() {
+  mpz_class eord;
+  mpz_class n;
+  QString rsaFileName = cboxOperation->currentIndex() ? RSA_PRIVATE_KEY :
+                                                        RSA_PUBLIC_KEY;
+  if (readKey(rsaFileName, eord, n)) {
+    QMessageBox::critical(this, "Key", "Key was not generated");
+    return;
+  }
+
   QString text = teditTextIn->toPlainText();
   if (text.isEmpty())
     return;
@@ -155,26 +173,19 @@ void Rsa::teditTextInChanged() {
         return;
       }
     }
-    rsaText(text, result, true);
+    rsaText(text, result, eord, n, true);
   } else
-    rsaText(text, result, false);
+    rsaText(text, result, eord, n, false);
   teditTextOut->setText(result);
 }
 
-void Rsa::rsaFile(QByteArray& data, QFile& outputFile, bool isDecrypt) {
-  mpz_class eord;
-  mpz_class n;
-  QString rsaFileName = isDecrypt ? RSA_PRIVATE_KEY : RSA_PUBLIC_KEY;
-  if (readKey(rsaFileName, eord, n)) {
-    QMessageBox::critical(this, "Key", "Key was not generated");
-    return;
-  }
-
+void Rsa::rsaFile(QByteArray& data, QFile& outputFile, const mpz_class& eord, 
+                  const mpz_class& n, bool isDecrypt) {
   QBuffer buffer(&data);
   buffer.open(QIODevice::ReadOnly);
   QProgressDialog progress("Encryption...", "cancel", 0, 100, this);
   progress.setModal(true);
-  progress.setMinimumDuration(1000);
+  progress.setMinimumDuration(250);
   if (!isDecrypt) {
     mpz_class num;
     while (!buffer.atEnd()) {
@@ -200,16 +211,11 @@ void Rsa::rsaFile(QByteArray& data, QFile& outputFile, bool isDecrypt) {
     }
   }
   progress.setValue(100);
+  QMessageBox::information(this, "Encryption", "Encryption completed");
 }
 
-void Rsa::rsaText(QString text, QString& result, bool isDecrypt) {
-  mpz_class eord;
-  mpz_class n;
-  QString rsaFileName = isDecrypt ? RSA_PRIVATE_KEY : RSA_PUBLIC_KEY;
-  if (readKey(rsaFileName, eord, n)) {
-    QMessageBox::critical(this, "Key", "Key was not generated");
-    return;
-  }
+void Rsa::rsaText(QString text, QString& result, const mpz_class& eord,
+                  const mpz_class& n, bool isDecrypt) {
 
   QProgressDialog progress("Encryption...", "cancel", 0, 100, this);
   progress.setModal(true);
@@ -246,8 +252,8 @@ int Rsa::readKey(QString rsaFileName, mpz_class& eord, mpz_class& n) {
   QFile rsaFile(rsaFileName);
   if (!rsaFile.open(QIODevice::ReadOnly))
     return EXIT_FAILURE;
-  eord = rsaFile.readLine().toStdString();
-  n = rsaFile.readLine().toStdString();
+  eord.set_str(rsaFile.readLine().toStdString(), 10);
+  n.set_str(rsaFile.readLine().toStdString(), 10);
   rsaFile.close();
   if (eord == 0 || n == 0)
     return EXIT_FAILURE;
@@ -268,9 +274,8 @@ Rsa::~Rsa() {
   delete labelOperation;
   delete cboxOperation;
   delete glayout;
-  delete widget;
 }
 
 QWidget* Rsa::getWidget() {
-  return widget;
+  return this;
 }
