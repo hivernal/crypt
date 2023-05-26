@@ -33,6 +33,7 @@ Hellman::Hellman() {
   sboxKeySize->setRange(4, 2048);
   sboxKeySize->setAlignment(Qt::AlignCenter);
   sboxKeySize->setMinimumWidth(50);
+  sboxKeySize->setValue(512);
   labelG = new QLabel("G:");
   labelG->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
   sboxG = new QSpinBox();

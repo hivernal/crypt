@@ -132,6 +132,11 @@ void Rsa::pbuttonRunClicked() {
   }
   QByteArray data = inputFile.readAll();
   inputFile.close();
+  if (mpz_sizeinbase(n.get_mpz_t(), 10) * data.size() > 6400000 &&
+      !cboxOperation->currentIndex()) {
+    QMessageBox::warning(this, "Input file", "Input file is too big for this key");
+    return;
+  }
   QFile outputFile(leditFileOut->text());
   if (!outputFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
     QMessageBox::critical(this, "Output file", "Error to open Output file");
@@ -153,6 +158,10 @@ void Rsa::pbuttonRunClicked() {
 }
 
 void Rsa::teditTextInChanged() {
+  QString text = teditTextIn->toPlainText();
+  if (text.isEmpty())
+    return;
+
   mpz_class eord;
   mpz_class n;
   QString rsaFileName = cboxOperation->currentIndex() ? RSA_PRIVATE_KEY :
@@ -161,10 +170,12 @@ void Rsa::teditTextInChanged() {
     QMessageBox::critical(this, "Key", "Key was not generated");
     return;
   }
-
-  QString text = teditTextIn->toPlainText();
-  if (text.isEmpty())
+  if (mpz_sizeinbase(n.get_mpz_t(), 10) * text.size() > 2400000 &&
+      !cboxOperation->currentIndex()) {
+    QMessageBox::warning(this, "Input text", "Input text is too big for this key");
     return;
+  }
+
   QString result;
   if (cboxOperation->currentIndex()) {
     for (QChar ch : text) {
@@ -219,7 +230,7 @@ void Rsa::rsaText(QString text, QString& result, const mpz_class& eord,
 
   QProgressDialog progress("Encryption...", "cancel", 0, 100, this);
   progress.setModal(true);
-  progress.setMinimumDuration(1000);
+  progress.setMinimumDuration(250);
   QTextStream textStream(&text);
   if (!isDecrypt) {
     mpz_class num;
