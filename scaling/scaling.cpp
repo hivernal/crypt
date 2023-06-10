@@ -118,7 +118,7 @@ void Scaling::pbuttonRunClicked() {
   }
 
   QFile fileIn;
-  if (openFile(fileIn, leditFileIn->text(), QIODevice::ReadOnly |
+  if (openFile(fileIn, leditFileIn->text(), QIODeviceBase::ReadOnly |
                QIODeviceBase::ExistingOnly)) {
     QMessageBox::critical(this, "Input file", "Error to open '" +
                           leditFileIn->text() + "' file");
@@ -128,7 +128,7 @@ void Scaling::pbuttonRunClicked() {
   fileIn.close();
 
   QFile fileOut;
-  if (openFile(fileOut, leditFileOut->text(), QIODevice::WriteOnly |
+  if (openFile(fileOut, leditFileOut->text(), QIODeviceBase::WriteOnly |
                QIODeviceBase::Truncate)) {
     QMessageBox::critical(this, "Output file", "Error to open '" +
                           leditFileOut->text() + "' file");
@@ -190,7 +190,7 @@ void Scaling::scaling(QByteArray& data) {
 void Scaling::pbuttonGenClicked() {
   qsizetype length;
   QFile fileIn;
-  if (openFile(fileIn, leditFileIn->text(), QIODevice::ReadOnly |
+  if (openFile(fileIn, leditFileIn->text(), QIODeviceBase::ReadOnly |
                QIODeviceBase::ExistingOnly)) {
     if (teditIn->toPlainText().isEmpty()) {
       QMessageBox::critical(this, "Message", "error to read file and text");

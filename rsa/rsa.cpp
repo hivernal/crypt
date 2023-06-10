@@ -93,12 +93,12 @@ void Rsa::pbuttonGenKeyClicked() {
   mpz_invert(d.get_mpz_t(), e.get_mpz_t(), f.get_mpz_t());
 
   QFile rsaPublicFile(RSA_PUBLIC_KEY);
-  if (!rsaPublicFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+  if (!rsaPublicFile.open(QIODeviceBase::WriteOnly | QIODeviceBase::Truncate)) {
     QMessageBox::critical(this, "Generating key", "Error to open public rsa file");
     return;
   }
   QFile rsaPrivateFile(RSA_PRIVATE_KEY);
-  if (!rsaPrivateFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+  if (!rsaPrivateFile.open(QIODeviceBase::WriteOnly | QIODeviceBase::Truncate)) {
     QMessageBox::critical(this, "Generating key", "Error to open private rsa file");
     rsaPublicFile.close();
     return;
@@ -126,7 +126,7 @@ void Rsa::pbuttonRunClicked() {
   }
 
   QFile inputFile(leditFileIn->text());
-  if (!inputFile.open(QIODevice::ReadOnly)) {
+  if (!inputFile.open(QIODeviceBase::ReadOnly)) {
     QMessageBox::critical(this, "Input file", "Error to open input file");
     return;
   }
@@ -138,7 +138,7 @@ void Rsa::pbuttonRunClicked() {
     return;
   }
   QFile outputFile(leditFileOut->text());
-  if (!outputFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+  if (!outputFile.open(QIODeviceBase::WriteOnly | QIODeviceBase::Truncate)) {
     QMessageBox::critical(this, "Output file", "Error to open Output file");
     return;
   }
@@ -193,7 +193,7 @@ void Rsa::teditTextInChanged() {
 void Rsa::rsaFile(QByteArray& data, QFile& outputFile, const mpz_class& eord, 
                   const mpz_class& n, bool isDecrypt) {
   QBuffer buffer(&data);
-  buffer.open(QIODevice::ReadOnly);
+  buffer.open(QIODeviceBase::ReadOnly);
   QProgressDialog progress("Encryption...", "cancel", 0, 100, this);
   progress.setModal(true);
   progress.setMinimumDuration(250);
@@ -261,7 +261,7 @@ void Rsa::rsaText(QString text, QString& result, const mpz_class& eord,
 
 int Rsa::readKey(QString rsaFileName, mpz_class& eord, mpz_class& n) {
   QFile rsaFile(rsaFileName);
-  if (!rsaFile.open(QIODevice::ReadOnly))
+  if (!rsaFile.open(QIODeviceBase::ReadOnly))
     return EXIT_FAILURE;
   eord.set_str(rsaFile.readLine().toStdString(), 10);
   n.set_str(rsaFile.readLine().toStdString(), 10);

@@ -111,12 +111,12 @@ void Hellman::pbuttonGenerateClicked() {
   mpz_powm(k.get_mpz_t(), bPublic.get_mpz_t(), aPrivate.get_mpz_t(), p.get_mpz_t());
 
   QFile publicKeyFile(HELLMAN_PUBLIC_KEY);
-  if (!publicKeyFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+  if (!publicKeyFile.open(QIODeviceBase::WriteOnly | QIODeviceBase::Truncate)) {
     QMessageBox::critical(this, "Key", "Error to generate key");
     return;
   }
   QFile privateKeyFile(HELLMAN_PRIVATE_KEY);
-  if (!privateKeyFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+  if (!privateKeyFile.open(QIODeviceBase::WriteOnly | QIODeviceBase::Truncate)) {
     publicKeyFile.close();
     QMessageBox::critical(this, "Key", "Error to generate key");
     return;
@@ -138,7 +138,7 @@ void Hellman::pbuttonGenerateClicked() {
 
 int Hellman::readKeyFile(mpz_class& aPrivate, mpz_class& k) {
   QFile privateKeyFile(HELLMAN_PRIVATE_KEY);
-  if (!privateKeyFile.open(QIODevice::ReadOnly)) {
+  if (!privateKeyFile.open(QIODeviceBase::ReadOnly)) {
     QMessageBox::critical(this, "Key", "Error to read key file");
     return EXIT_FAILURE;
   }
@@ -158,14 +158,14 @@ void Hellman::pbuttonRunClicked() {
     return;
 
   QFile inputFile(leditFileIn->text());
-  if (!inputFile.open(QIODevice::ReadOnly)) {
+  if (!inputFile.open(QIODeviceBase::ReadOnly)) {
     QMessageBox::critical(this, "Input file", "Error to open input file");
     return;
   }
   QByteArray data = inputFile.readAll();
   inputFile.close();
   QFile outputFile(leditFileOut->text());
-  if (!outputFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+  if (!outputFile.open(QIODeviceBase::WriteOnly | QIODeviceBase::Truncate)) {
     QMessageBox::critical(this, "Output file", "Error to open output file");
     return;
   }
@@ -175,7 +175,7 @@ void Hellman::pbuttonRunClicked() {
 
 void Hellman::hellmanFile(QByteArray& data, QFile& outputFile, int key) {
   QBuffer buffer(&data);
-  buffer.open(QIODevice::ReadOnly);
+  buffer.open(QIODeviceBase::ReadOnly);
   char ch;
   QProgressDialog progress("Encryption...", "cancel", 0, 100, this);
   progress.setModal(true);
