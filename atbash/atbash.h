@@ -7,6 +7,8 @@
 #include <QLabel>
 
 class Atbash : public QWidget {
+  Q_OBJECT
+
 protected:
   QGridLayout* glayout;
   QTextEdit* teditIn;

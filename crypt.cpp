@@ -1,43 +1,30 @@
 #include "crypt.h"
 
-Crypt::Crypt(QWidget* parent) : QWidget(parent) {
+Crypt::Crypt() {
   this->setWindowTitle("Encryption");
-  // this->setMaximumSize(700, 500);
-
-  tab_widget = new QTabWidget();
-
+  tabWidget = new QTabWidget();
   atbash = new Atbash();
-  tab_widget->addTab(atbash->getWidget(), "Atbash");
-
+  tabWidget->addTab(atbash->getWidget(), "Atbash");
   caesar = new Caesar();
-  tab_widget->addTab(caesar->getWidget(), "Caesar");
-
+  tabWidget->addTab(caesar->getWidget(), "Caesar");
   richelieu = new Richelieu();
-  tab_widget->addTab(richelieu->getWidget(), "Richelieu");
-
+  tabWidget->addTab(richelieu->getWidget(), "Richelieu");
   gronsfeld = new Gronsfeld();
-  tab_widget->addTab(gronsfeld->getWidget(), "Gronsfeld");
-
+  tabWidget->addTab(gronsfeld->getWidget(), "Gronsfeld");
   visionary = new Visionary();
-  tab_widget->addTab(visionary->getWidget(), "Visionary");
-
+  tabWidget->addTab(visionary->getWidget(), "Visionary");
   playfair = new Playfair();
-  tab_widget->addTab(playfair->getWidget(), "Playfair");
-
+  tabWidget->addTab(playfair->getWidget(), "Playfair");
   analysis = new Analysis();
-  tab_widget->addTab(analysis->getWidget(), "Analysis");
-
+  tabWidget->addTab(analysis->getWidget(), "Analysis");
   scaling = new Scaling();
-  tab_widget->addTab(scaling->getWidget(), "Scaling");
-
+  tabWidget->addTab(scaling->getWidget(), "Scaling");
   rsa = new Rsa();
-  tab_widget->addTab(rsa->getWidget(), "Rsa");
-
+  tabWidget->addTab(rsa->getWidget(), "RSA");
   hellman = new Hellman();
-  tab_widget->addTab(hellman->getWidget(), "Hellman");
-
-  glayout_main = new QGridLayout(this);
-  glayout_main->addWidget(tab_widget);
+  tabWidget->addTab(hellman->getWidget(), "Hellman");
+  glayoutMain = new QGridLayout(this);
+  glayoutMain->addWidget(tabWidget);
 }
 
 Crypt::~Crypt() {
@@ -52,6 +39,6 @@ Crypt::~Crypt() {
   delete rsa;
   delete hellman;
 
-  delete glayout_main;
-  delete tab_widget;
+  delete glayoutMain;
+  delete tabWidget;
 }

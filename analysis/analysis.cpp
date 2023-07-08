@@ -1,8 +1,13 @@
 #include "analysis.h"
-#include "macros.h"
+#include "alphabet.h"
 
 const QString alphabetEn = "ETAONISRHLDCUPFMWYBGVKQXJZ";
 const QString alphabetRu = " ОЕАИНТСРВЛКМДПУЯЫЗЪБГЧЙХЖЮШЦЩЭФ";
+
+enum {
+  ruFlag = 1, enFlag = 2
+};
+
 
 void addSymbol(QList<QPair<QChar, qsizetype>>& symbolAmount, QChar symbol) {
   for (qsizetype i = 0; i < symbolAmount.length(); ++i) {
@@ -26,7 +31,6 @@ bool compareSymbols(QPair<QChar, qsizetype>& s1, QPair<QChar, qsizetype>& s2) {
   return s1.second > s2.second;
 }
 
-
 Analysis::Analysis() {
   glayout = new QGridLayout(this);
 
@@ -36,7 +40,6 @@ Analysis::Analysis() {
   glayout->addWidget(labelFile, 0, 0);
   glayout->addWidget(leditFile, 0, 1);
   glayout->addWidget(pbuttonFile, 0, 2);
-
 
   labelIn = new QLabel("Text ");
   teditIn = new QTextEdit();
@@ -174,22 +177,22 @@ int Analysis::analysis(QString& text, QList<QPair<QChar, qsizetype>>& symbolAmou
       wasLow = true;
       text[i] = text[i].toUpper();
     }
-    if (IS_UP_EN(text[i])) {
-      alphabet |= En;
+    if (isUpEn(text[i])) {
+      alphabet |= enFlag;
       addSymbol(symbolAmount, text[i]);
     }
-    else if (IS_UP_RU(text[i]) || text[i] == ' ' && alphabet & Ru) {
-      alphabet |= Ru;
+    else if (isUpRu(text[i]) || text[i] == ' ' && alphabet & ruFlag) {
+      alphabet |= ruFlag;
       addSymbol(symbolAmount, text[i]);
     }
     ++amount;
     if (wasLow)
       text[i] = text[i].toLower();
   }
-  if (alphabet & Ru && alphabet & En)
+  if (alphabet & ruFlag && alphabet & enFlag)
     return EXIT_FAILURE;
 
-  if (alphabet & Ru) alphabetAfter = alphabetRu;
+  if (alphabet & ruFlag) alphabetAfter = alphabetRu;
   else alphabetAfter = alphabetEn;
   std::sort(symbolAmount.begin(), symbolAmount.end(), compareSymbols);
 
@@ -207,9 +210,9 @@ int Analysis::analysis(QString& text, QList<QPair<QChar, qsizetype>>& symbolAmou
       wasLow = true;
       text[i] = text[i].toUpper();
     }
-    if (IS_UP_EN(text[i])) {
+    if (isUpEn(text[i])) {
       text[i] = alphabetEn[indexOfSymbol(symbolAmount, text[i])];
-    } else if (IS_UP_RU(text[i]) || text[i] == ' ' && alphabet & Ru) {
+    } else if (isUpRu(text[i]) || text[i] == ' ' && alphabet & ruFlag) {
       text[i] = alphabetRu[indexOfSymbol(symbolAmount, text[i])];
     }
     if (wasLow)

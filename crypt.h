@@ -1,7 +1,6 @@
-#ifndef WIDGET_H
-#define WIDGET_H
+#ifndef CRYPT_H
+#define CRYPT_H
 
-#include <QGridLayout>
 #include <QTabWidget>
 
 #include "atbash.h"
@@ -29,11 +28,12 @@ class Crypt : public QWidget {
   Rsa* rsa;
   Hellman* hellman;
 
-  QTabWidget* tab_widget;
-  QGridLayout* glayout_main;
+  QTabWidget* tabWidget;
+  QGridLayout* glayoutMain;
 
 public:
-  Crypt(QWidget* parent = nullptr);
+  Crypt();
   ~Crypt();
 };
-#endif // WIDGET_H
+
+#endif

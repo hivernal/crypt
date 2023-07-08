@@ -5,8 +5,8 @@
 
 #include "hellman.h"
 
-#define HELLMAN_PRIVATE_KEY "hellman.priv"
-#define HELLMAN_PUBLIC_KEY "hellman.pub"
+const QString hellmanPrivateKey = "hellman.priv";
+const QString hellmanPublicKey = "hellman.pub";
 
 Hellman::Hellman() {
   glayout = new QGridLayout(this);
@@ -110,12 +110,12 @@ void Hellman::pbuttonGenerateClicked() {
   mpz_class k;
   mpz_powm(k.get_mpz_t(), bPublic.get_mpz_t(), aPrivate.get_mpz_t(), p.get_mpz_t());
 
-  QFile publicKeyFile(HELLMAN_PUBLIC_KEY);
+  QFile publicKeyFile(hellmanPublicKey);
   if (!publicKeyFile.open(QIODeviceBase::WriteOnly | QIODeviceBase::Truncate)) {
     QMessageBox::critical(this, "Key", "Error to generate key");
     return;
   }
-  QFile privateKeyFile(HELLMAN_PRIVATE_KEY);
+  QFile privateKeyFile(hellmanPrivateKey);
   if (!privateKeyFile.open(QIODeviceBase::WriteOnly | QIODeviceBase::Truncate)) {
     publicKeyFile.close();
     QMessageBox::critical(this, "Key", "Error to generate key");
@@ -137,7 +137,7 @@ void Hellman::pbuttonGenerateClicked() {
 }
 
 int Hellman::readKeyFile(mpz_class& aPrivate, mpz_class& k) {
-  QFile privateKeyFile(HELLMAN_PRIVATE_KEY);
+  QFile privateKeyFile(hellmanPrivateKey);
   if (!privateKeyFile.open(QIODeviceBase::ReadOnly)) {
     QMessageBox::critical(this, "Key", "Error to read key file");
     return EXIT_FAILURE;

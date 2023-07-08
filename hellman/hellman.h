@@ -14,6 +14,8 @@
 #include <gmpxx.h>
 
 class Hellman : public QWidget {
+  Q_OBJECT
+
   QGridLayout* glayout;
 
   QLabel* labelTextIn;

@@ -7,6 +7,8 @@
 #include <QGridLayout>
 
 class BarCharts : public QWidget {
+  Q_OBJECT
+
   QBarSeries* bseries;
   QValueAxis* axisY;
   QBarCategoryAxis* axisX;

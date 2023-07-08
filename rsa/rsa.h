@@ -13,6 +13,8 @@
 #include <gmpxx.h>
 
 class Rsa : public QWidget {
+  Q_OBJECT
+
   QGridLayout* glayout;
   QLabel* labelTextIn;
   QTextEdit* teditTextIn;

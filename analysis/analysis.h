@@ -11,6 +11,8 @@
 #include "barcharts.h"
 
 class Analysis : public QWidget {
+  Q_OBJECT
+
   QGridLayout* glayout;
   QLabel* labelFile;
   QLineEdit* leditFile;
@@ -26,7 +28,6 @@ class Analysis : public QWidget {
   BarCharts* barcharts;
   QString alphabetBefore;
   QString alphabetAfter;
-  enum {Ru = 1, En};
 
   int readFile(QString fileName);
   void fillTable();

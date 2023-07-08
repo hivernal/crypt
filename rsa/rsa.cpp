@@ -5,8 +5,8 @@
 #include <QProgressDialog>
 #include <QBuffer>
 
-#define RSA_PRIVATE_KEY "rsa.priv"
-#define RSA_PUBLIC_KEY "rsa.pub"
+const QString rsaPrivateKey = "rsa.priv";
+const QString rsaPublicKey = "rsa.pub";
 
 Rsa::Rsa() {
   glayout = new QGridLayout(this);
@@ -92,12 +92,12 @@ void Rsa::pbuttonGenKeyClicked() {
   while (gcd(f, e) != 1 || e < 2);
   mpz_invert(d.get_mpz_t(), e.get_mpz_t(), f.get_mpz_t());
 
-  QFile rsaPublicFile(RSA_PUBLIC_KEY);
+  QFile rsaPublicFile(rsaPublicKey);
   if (!rsaPublicFile.open(QIODeviceBase::WriteOnly | QIODeviceBase::Truncate)) {
     QMessageBox::critical(this, "Generating key", "Error to open public rsa file");
     return;
   }
-  QFile rsaPrivateFile(RSA_PRIVATE_KEY);
+  QFile rsaPrivateFile(rsaPrivateKey);
   if (!rsaPrivateFile.open(QIODeviceBase::WriteOnly | QIODeviceBase::Truncate)) {
     QMessageBox::critical(this, "Generating key", "Error to open private rsa file");
     rsaPublicFile.close();
@@ -118,8 +118,8 @@ void Rsa::pbuttonGenKeyClicked() {
 void Rsa::pbuttonRunClicked() {
   mpz_class eord;
   mpz_class n;
-  QString rsaFileName = cboxOperation->currentIndex() ? RSA_PRIVATE_KEY : 
-                                                        RSA_PUBLIC_KEY;
+  QString rsaFileName = cboxOperation->currentIndex() ? rsaPrivateKey : 
+                                                        rsaPublicKey;
   if (readKey(rsaFileName, eord, n)) {
     QMessageBox::critical(this, "Key", "Key was not generated");
     return;
@@ -164,8 +164,8 @@ void Rsa::teditTextInChanged() {
 
   mpz_class eord;
   mpz_class n;
-  QString rsaFileName = cboxOperation->currentIndex() ? RSA_PRIVATE_KEY :
-                                                        RSA_PUBLIC_KEY;
+  QString rsaFileName = cboxOperation->currentIndex() ? rsaPrivateKey :
+                                                        rsaPublicKey;
   if (readKey(rsaFileName, eord, n)) {
     QMessageBox::critical(this, "Key", "Key was not generated");
     return;

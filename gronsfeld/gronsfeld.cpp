@@ -1,5 +1,5 @@
 #include "gronsfeld.h"
-#include "macros.h"
+#include "alphabet.h"
 
 int gronsfeld(QString& text, QString key, bool isDecrypt) {
   QStringList steps = key.split(',', Qt::SkipEmptyParts);
@@ -18,36 +18,36 @@ int gronsfeld(QString& text, QString key, bool isDecrypt) {
     if (isDecrypt)
       step = ~step + 1;
 
-    if (IS_UP_EN(text[i])) {
+    if (isUpEn(text[i])) {
       ++j;
-      text[i] = (QChar)(text[i].unicode() + step % EN);
+      text[i] = (QChar)(text[i].unicode() + step % sizeEn);
       if (text[i] > u'Z')
-        text[i] = (QChar)(text[i].unicode() - EN);
+        text[i] = (QChar)(text[i].unicode() - sizeEn);
       else if (text[i] < u'A')
-        text[i] = (QChar)(text[i].unicode() + EN);
-    } else if (IS_LOW_EN(text[i])) {
+        text[i] = (QChar)(text[i].unicode() + sizeEn);
+    } else if (isLowEn(text[i])) {
       ++j;
-      text[i] = (QChar)(text[i].unicode() + step % EN);
+      text[i] = (QChar)(text[i].unicode() + step % sizeEn);
       if (text[i] > u'z')
-        text[i] = (QChar)(text[i].unicode() - EN);
+        text[i] = (QChar)(text[i].unicode() - sizeEn);
       else if (text[i] < u'a')
-        text[i] = (QChar)(text[i].unicode() + EN);
+        text[i] = (QChar)(text[i].unicode() + sizeEn);
     }
 
-    else if (IS_UP_RU(text[i])) {
+    else if (isUpRu(text[i])) {
       ++j;
-      text[i] = (QChar)(text[i].unicode() + step % RU);
+      text[i] = (QChar)(text[i].unicode() + step % sizeRu);
       if (text[i] > u'Я')
-        text[i] = (QChar)(text[i].unicode() - RU);
+        text[i] = (QChar)(text[i].unicode() - sizeRu);
       else if (text[i] < u'А')
-        text[i] = (QChar)(text[i].unicode() + RU);
-    } else if (IS_LOW_RU(text[i])) {
+        text[i] = (QChar)(text[i].unicode() + sizeRu);
+    } else if (isLowRu(text[i])) {
       ++j;
-      text[i] = (QChar)(text[i].unicode() + step % RU);
+      text[i] = (QChar)(text[i].unicode() + step % sizeRu);
       if (text[i] > u'я')
-        text[i] = (QChar)(text[i].unicode() - RU);
+        text[i] = (QChar)(text[i].unicode() - sizeRu);
       else if (text[i] < u'а')
-        text[i] = (QChar)(text[i].unicode() + RU);
+        text[i] = (QChar)(text[i].unicode() + sizeRu);
     }
   }
   return EXIT_SUCCESS;

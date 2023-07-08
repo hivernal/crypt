@@ -1,20 +1,21 @@
 #include "playfair.h"
 
-#define NROWS 11
-#define NCOLUMNS 11
+const QString alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя12345";
 
-QString alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя12345";
+enum {
+  nrows = 11, ncolumns = 11
+} ;
 
 int playfair(QString& text, QString key, bool isDecrypt) {
   if (!key.length())
     return EXIT_FAILURE;
 
-  QChar matrix[NROWS][NCOLUMNS + 1];
+  QChar matrix[nrows][ncolumns + 1];
   qsizetype i = 0, j = 0, k = 0;
   while (k < key.length()) {
     if (!alphabet.contains(key[k]))
       return EXIT_FAILURE;
-    if (j == NCOLUMNS) {
+    if (j == ncolumns) {
       matrix[i][j] = '\0';
       j = 0;
       ++i;
@@ -23,8 +24,8 @@ int playfair(QString& text, QString key, bool isDecrypt) {
       matrix[i][j++] = key[k];
     ++k;
   }
-  for (k = 0; i < NROWS; ++i, j %= NCOLUMNS) {
-    for (; j < NCOLUMNS; ++k) {
+  for (k = 0; i < nrows; ++i, j %= ncolumns) {
+    for (; j < ncolumns; ++k) {
       if (!key.contains(alphabet[k]))
         matrix[i][j++] = alphabet[k];
     }
@@ -41,33 +42,33 @@ int playfair(QString& text, QString key, bool isDecrypt) {
       text.insert(j, 'x');
 
     qsizetype i1 = 0, j1 = 0, i2 = 0, j2 = 0;
-    for (i1 = 0; i1 < NROWS; ++i1) {
-      for (j1 = 0; j1 < NCOLUMNS; ++j1) {
+    for (i1 = 0; i1 < nrows; ++i1) {
+      for (j1 = 0; j1 < ncolumns; ++j1) {
         if (matrix[i1][j1] == text[i]) break;
       }
       if (matrix[i1][j1] == text[i]) break;
     }
-    for (i2 = 0; i2 < NROWS; ++i2) {
-      for (j2 = 0; j2 < NCOLUMNS; ++j2) {
+    for (i2 = 0; i2 < nrows; ++i2) {
+      for (j2 = 0; j2 < ncolumns; ++j2) {
         if (matrix[i2][j2] == text[j]) break;
       }
       if (matrix[i2][j2] == text[j]) break;
     }
     if (i1 == i2) {
       if (isDecrypt) {
-        text[i] = matrix[i1][(j1 - 1 + NCOLUMNS) % NCOLUMNS];
-        text[j] = matrix[i2][(j2 - 1 + NCOLUMNS) % NCOLUMNS];
+        text[i] = matrix[i1][(j1 - 1 + ncolumns) % ncolumns];
+        text[j] = matrix[i2][(j2 - 1 + ncolumns) % ncolumns];
       } else {
-        text[i] = matrix[i1][(j1 + 1) % NCOLUMNS];
-        text[j] = matrix[i2][(j2 + 1) % NCOLUMNS];
+        text[i] = matrix[i1][(j1 + 1) % ncolumns];
+        text[j] = matrix[i2][(j2 + 1) % ncolumns];
       }
     } else if (j1 == j2) {
       if (isDecrypt) {
-        text[i] = matrix[(i1 - 1 + NROWS) % NROWS][j1];
-        text[j] = matrix[(i2 - 1 + NROWS) % NROWS][j2];
+        text[i] = matrix[(i1 - 1 + nrows) % nrows][j1];
+        text[j] = matrix[(i2 - 1 + nrows) % nrows][j2];
       } else {
-        text[i] = matrix[(i1 + 1) % NROWS][j1];
-        text[j] = matrix[(i2 + 1) % NROWS][j2];
+        text[i] = matrix[(i1 + 1) % nrows][j1];
+        text[j] = matrix[(i2 + 1) % nrows][j2];
       }
     } else {
       text[i] = matrix[i1][j2];
@@ -77,8 +78,8 @@ int playfair(QString& text, QString key, bool isDecrypt) {
 
   QTextStream out(stdout);
   out << '\n';
-  for (i = 0; i < NROWS; ++i) {
-    for (j = 0; j < NCOLUMNS; ++j) {
+  for (i = 0; i < nrows; ++i) {
+    for (j = 0; j < ncolumns; ++j) {
       out << matrix[i][j] << ' ';
     }
     out << '\n';

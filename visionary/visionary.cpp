@@ -1,5 +1,5 @@
 #include "visionary.h"
-#include "macros.h"
+#include "alphabet.h"
 
 int visionary(QString& text, QString key, bool isDecrypt) {
   if (!key.length())
@@ -16,33 +16,33 @@ int visionary(QString& text, QString key, bool isDecrypt) {
       j = 0;
 
     if (isDecrypt) {
-      if (IS_EN(text[i])) {
-        tmp = (QChar)(text[i].unicode() - key[j++].unicode() % EN);
-        if (IS_UP_EN(text[i]) && tmp < u'A' ||
-            IS_LOW_EN(text[i]) && tmp < u'a')
-          tmp = (QChar)(tmp.unicode() + EN);
+      if (isEn(text[i])) {
+        tmp = (QChar)(text[i].unicode() - key[j++].unicode() % sizeEn);
+        if (isUpEn(text[i]) && tmp < u'A' ||
+            isLowEn(text[i]) && tmp < u'a')
+          tmp = (QChar)(tmp.unicode() + sizeEn);
         text[i] = tmp;
-      } else if (IS_RU(text[i])) {
-        tmp = (QChar)(text[i].unicode() - key[j++].unicode() % RU);
-        if (IS_UP_RU(text[i]) && tmp < u'А' ||
-            IS_LOW_RU(text[i]) && tmp < u'а')
-          tmp = (QChar)(tmp.unicode() + RU);
+      } else if (isRu(text[i])) {
+        tmp = (QChar)(text[i].unicode() - key[j++].unicode() % sizeRu);
+        if (isUpRu(text[i]) && tmp < u'А' ||
+            isLowRu(text[i]) && tmp < u'а')
+          tmp = (QChar)(tmp.unicode() + sizeRu);
         text[i] = tmp;
       }
     }
 
     else {
-      if (IS_EN(text[i])) {
-        tmp = (QChar)(text[i].unicode() + key[j++].unicode() % EN);
-        if (IS_UP_EN(text[i]) && tmp > u'Z' ||
-            IS_LOW_EN(text[i]) && tmp > u'z')
-          tmp = (QChar)(tmp.unicode() - EN);
+      if (isEn(text[i])) {
+        tmp = (QChar)(text[i].unicode() + key[j++].unicode() % sizeEn);
+        if (isUpEn(text[i]) && tmp > u'Z' ||
+            isLowEn(text[i]) && tmp > u'z')
+          tmp = (QChar)(tmp.unicode() - sizeEn);
         text[i] = tmp;
-      } else if (IS_RU(text[i])) {
-        tmp = (QChar)(text[i].unicode() + key[j++].unicode() % RU);
-        if (IS_UP_RU(text[i]) && tmp > u'Я' ||
-            IS_LOW_RU(text[i]) && tmp > u'я')
-          tmp = (QChar)(tmp.unicode() - RU);
+      } else if (isRu(text[i])) {
+        tmp = (QChar)(text[i].unicode() + key[j++].unicode() % sizeRu);
+        if (isUpRu(text[i]) && tmp > u'Я' ||
+            isLowRu(text[i]) && tmp > u'я')
+          tmp = (QChar)(tmp.unicode() - sizeRu);
         text[i] = tmp;
       }
     }

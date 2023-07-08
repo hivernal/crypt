@@ -1,8 +1,8 @@
-#include "crypt.h"
-
 #include <QApplication>
 
-int main(int argc, char *argv[]) {
+#include "crypt.h"
+
+int main(int argc, char* argv[]) {
   QApplication a(argc, argv);
   Crypt w;
   w.show();
